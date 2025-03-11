@@ -1,4 +1,5 @@
 using API.Configuration;
+using Infraestructure;
 using Infraestructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -25,6 +26,7 @@ Console.ResetColor();
 // Add services to the container.
 builder.Services.AddDbContext<BackendDbContext>(options => options.UseSqlServer(dbConfig.ConnectionString));
 
+builder.Services.AddInfrastructure();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
