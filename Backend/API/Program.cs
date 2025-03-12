@@ -1,10 +1,7 @@
 using System.Text.Json;
 using API.Configuration;
-using Aplication.Interfaces.Locations;
-using Aplication.Services;
-using Infraestructure;
-using Infraestructure.Persistence;
-using Infraestructure.Repositories;
+using Infrastructure;
+using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -39,11 +36,7 @@ Console.ResetColor();
 // Add services to the container.
 builder.Services.AddDbContext<BackendDbContext>(options => options.UseSqlServer(dbConfig.ConnectionString));
 
-// Services was defined on Infraestructure Dependency Injection
-builder.Services.AddScoped<ILocationRepository, LocationRepository>();
-builder.Services.AddScoped<ILocationService, LocationService>();
-
-//builder.Services.AddInfrastructure();
+builder.Services.AddInfrastructure();
 
 builder.Services.AddControllers();
 

@@ -1,11 +1,11 @@
 ﻿using Aplication.Interfaces.Locations;
 using Domain.Entities;
-using Infraestructure.Persistence;
+using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infraestructure.Repositories
 {
-    public class LocationRepository: ILocationRepository
+    public class LocationRepository : ILocationRepository
     {
         private readonly BackendDbContext _context;
 

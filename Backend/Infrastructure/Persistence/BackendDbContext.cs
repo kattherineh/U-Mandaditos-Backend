@@ -1,7 +1,7 @@
 ﻿using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace Infraestructure.Persistence
+namespace Infrastructure.Persistence
 {
     public class BackendDbContext : DbContext
     {
@@ -10,11 +10,11 @@ namespace Infraestructure.Persistence
         }
         
         public DbSet<OrderStatus> OrderStatus { get; set; }
+        public DbSet<Location> Locations { set; get; }
 
-        //Aquí se definen las tablas de la base de datos
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.ApplyConfigurationsFromAssembly(typeof(BackendDbContext).Assembly);
+            base.OnModelCreating(modelBuilder);
         }
     }
 }
