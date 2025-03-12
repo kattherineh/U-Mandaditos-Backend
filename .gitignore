@@ -1,3 +1,5 @@
+.vs
+.github
 Backend/.vs
 Backend/API/bin
 Backend/API/obj
@@ -6,3 +8,4 @@ Backend/Aplication/obj
 Backend/*/bin
 Backend/*/obj
 Backend/API/.env
+Backend/*/Migrations

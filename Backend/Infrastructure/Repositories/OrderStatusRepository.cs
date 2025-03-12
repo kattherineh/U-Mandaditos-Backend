@@ -1,9 +1,9 @@
 ﻿using Aplication.Interfaces;
 using Domain.Entities;
-using Infraestructure.Persistence;
+using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
-namespace Infraestructure.Repositories;
+namespace Infrastructure.Repositories;
 
 public class OrderStatusRepository: IOrderStatusRepository 
 {

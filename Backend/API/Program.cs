@@ -1,22 +1,32 @@
+using System.Text.Json;
 using API.Configuration;
-using Infraestructure;
-using Infraestructure.Persistence;
+using Infrastructure;
+using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 var dbConfig = new DatabaseConfig();
 
+// Introduction message to show in console
+string jsonContent = File.ReadAllText("version.json");
+
+using (JsonDocument doc = JsonDocument.Parse(jsonContent))
+{
+    string version = doc.RootElement.GetProperty("version").GetString();
+    Console.WriteLine($"U-Mandaditos API v{version}");
+}
+
 // Testing database connection
 if (dbConfig.TestConnection())
 {
     Console.ForegroundColor = ConsoleColor.Green;
-    Console.WriteLine("Connection successfully to U-Mandaditos database"); 
+    Console.WriteLine("Connection successfully to U-Mandaditos database\n");
 }
 else
 {
     Console.ForegroundColor = ConsoleColor.Red;
-    Console.WriteLine("Connection failed to U-Mandaditos database");
+    Console.WriteLine("Connection failed to U-Mandaditos database\n");
 }
 
 
@@ -29,11 +39,12 @@ builder.Services.AddDbContext<BackendDbContext>(options => options.UseSqlServer(
 builder.Services.AddInfrastructure();
 
 builder.Services.AddControllers();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-var app = builder.Build();
+var app = builder.Build(); 
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
