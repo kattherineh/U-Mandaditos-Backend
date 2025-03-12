@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infraestructure.Persistence
 {
@@ -9,9 +10,11 @@ namespace Infraestructure.Persistence
         }
 
         //Aquí se definen las tablas de la base de datos
+        public DbSet<Location> Locations { set; get; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.ApplyConfigurationsFromAssembly(typeof(BackendDbContext).Assembly);
+            base.OnModelCreating(modelBuilder);
         }
     }
 }
