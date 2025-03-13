@@ -11,6 +11,7 @@ namespace Infrastructure.Persistence
         
         public DbSet<OrderStatus> OrderStatus { get; set; }
         public DbSet<Location> Locations { set; get; }
+        public DbSet<Media> Media { set; get; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

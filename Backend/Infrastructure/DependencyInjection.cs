@@ -1,5 +1,6 @@
 ﻿using Aplication.Interfaces;
 using Aplication.Interfaces.Locations;
+using Aplication.Interfaces.Medias;
 using Aplication.Services;
 using Infraestructure.Repositories;
 using Infrastructure.Repositories;
@@ -16,6 +17,9 @@ public static class DependencyInjection
 
         services.AddScoped<ILocationRepository, LocationRepository>();
         services.AddScoped<ILocationService, LocationService>();
+
+        services.AddScoped<IMediaRepository, MediaRepository>();
+        services.AddScoped<IMediaService, MediaService>();
 
         return services;
     }
