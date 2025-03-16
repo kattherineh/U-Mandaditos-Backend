@@ -1,9 +1,9 @@
-# U-Mandaditos Backend - Entity Framework Core
+## U-Mandaditos Backend - Entity Framework Core
 Aplicación Backend de Sistema U-Mandaditos
 
 ---
 
-# Comandos iniciales
+### Comandos iniciales
 
 - Ejecutar solo una vez el siguiente comando para restaurar la configuracion
 
