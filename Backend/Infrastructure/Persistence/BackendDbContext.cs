@@ -16,6 +16,14 @@ namespace Infrastructure.Persistence
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+            
+            modelBuilder.Entity<Location>()
+                .Property(l => l.Latitude)
+                .HasColumnType("DECIMAL(18,8)");
+
+            modelBuilder.Entity<Location>()
+                .Property(l => l.Longitude)
+                .HasColumnType("DECIMAL(18,8)");
         }
     }
 }
