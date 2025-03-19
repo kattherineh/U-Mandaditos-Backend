@@ -14,6 +14,8 @@ namespace Infrastructure.Persistence
         public DbSet<Media> Media { set; get; }
         public DbSet<Career> Careers { set; get; }
         public DbSet<User> Users { set; get; }
+        
+        public DbSet<SessionLog> SessionLogs { set; get; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -36,6 +38,12 @@ namespace Infrastructure.Persistence
                 .WithOne()
                 .HasForeignKey<User>(u => u.CareerId)
                 .OnDelete(DeleteBehavior.SetNull);
+
+            modelBuilder.Entity<SessionLog>()
+                .HasOne(s => s.User)
+                .WithOne()
+                .HasForeignKey<SessionLog>(s => s.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
             
             modelBuilder.Entity<Location>()
                 .Property(l => l.Latitude)
