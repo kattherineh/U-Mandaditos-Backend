@@ -21,6 +21,9 @@ public static class DependencyInjection
         services.AddScoped<IMediaRepository, MediaRepository>();
         services.AddScoped<IMediaService, MediaService>();
 
+        services.AddScoped<ICareerRepository, CareerRepository>();
+        services.AddScoped<ICareerService, CareerService>();
+
         return services;
     }
 }
