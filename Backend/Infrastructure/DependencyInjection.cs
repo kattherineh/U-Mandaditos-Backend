@@ -20,6 +20,9 @@ public static class DependencyInjection
 
         services.AddScoped<IMediaRepository, MediaRepository>();
         services.AddScoped<IMediaService, MediaService>();
+        
+        services.AddScoped<IUserRoleRepository, UserRoleRepository>();
+        services.AddScoped<IUserRoleService, UserRoleService>();
 
         services.AddScoped<ICareerRepository, CareerRepository>();
         services.AddScoped<ICareerService, CareerService>();
