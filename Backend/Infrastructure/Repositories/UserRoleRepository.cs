@@ -17,11 +17,11 @@ public class UserRoleRepository : IUserRoleRepository
 
     public async Task<IEnumerable<UserRole>> GetAllAsync()
     {
-        return await _context.UserRole.ToListAsync();
+        return await _context.UserRoles.ToListAsync();
     }
 
     public async Task<UserRole> GetByIdAsync(int id)
     {
-        return await _context.UserRole.FindAsync(id);
+        return await _context.UserRoles.FindAsync(id);
     }
 }
