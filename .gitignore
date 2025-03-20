@@ -9,3 +9,4 @@ Backend/*/bin
 Backend/*/obj
 Backend/API/.env
 Backend/*/Migrations
+Backend/.idea/
