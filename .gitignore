@@ -11,3 +11,4 @@ Backend/*/obj
 Backend/API/.env
 Backend/*/Migrations
 Backend/.idea/
+Backend/.idea/*
