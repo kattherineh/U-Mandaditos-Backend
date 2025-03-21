@@ -1,6 +1,8 @@
 ﻿using Aplication.Interfaces;
 using Aplication.Interfaces.Locations;
+using Aplication.Interfaces.Mandaditos;
 using Aplication.Interfaces.Medias;
+using Aplication.Interfaces.Offers;
 using Aplication.Services;
 using Infraestructure.Repositories;
 using Infrastructure.Repositories;
@@ -26,6 +28,9 @@ public static class DependencyInjection
 
         services.AddScoped<ICareerRepository, CareerRepository>();
         services.AddScoped<ICareerService, CareerService>();
+
+        services.AddScoped<IOfferRepository, OfferRepository>();
+        services.AddScoped<IMandaditoRepository, MandaditoRepository>();
 
         return services;
     }
