@@ -14,14 +14,12 @@ namespace Infrastructure.Persistence
         public DbSet<Media> Media { set; get; }
         public DbSet<Career> Careers { set; get; }
         public DbSet<User> Users { set; get; }
-        
         public DbSet<SessionLog> SessionLogs { set; get; }
-        
         public DbSet<UserRole> UserRoles { set; get; }
-        
         public DbSet<Post> Posts { get; set; }
-        
         public DbSet<UserLocationHistory> UserLocationHistories { get; set; }
+        public DbSet<Offer> Offers { set; get; }
+        public DbSet<Mandadito> Mandaditos { set; get; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -117,6 +115,62 @@ namespace Infrastructure.Persistence
                     .HasForeignKey(ulh => ulh.IdLocation)
                     .OnDelete(DeleteBehavior.Cascade);
             });
+
+            modelBuilder.Entity<Offer>(entity =>
+            {
+                entity.HasKey(o => o.Id);
+
+                entity.Property(o => o.CounterOfferAmount)
+                    .IsRequired()
+                    .HasColumnType("DECIMAL(18,2)");
+
+                entity.HasOne(o => o.UserCreator)
+                    .WithMany()
+                    .HasForeignKey(o => o.IdUserCreator)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+
+                entity.HasOne(o => o.Post)
+                    .WithMany()
+                    .HasForeignKey(o => o.IdPost)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.Property(o => o.CreatedAt)
+                    .HasDefaultValueSql("GETDATE()");
+
+                entity.Property(o => o.IsCounterOffer)
+                    .IsRequired();
+
+                entity.Property(o => o.Accepted)
+                    .HasDefaultValue(false);
+
+            });
+
+            modelBuilder.Entity<Mandadito>(entity =>
+            {
+                entity.HasKey(m => m.Id);
+
+                entity.Property(m => m.SecurityCode)
+                    .IsRequired()
+                    .HasMaxLength(6);
+
+                entity.Property(m => m.AcceptedRate)
+                    .IsRequired()
+                    .HasColumnType("DECIMAL(18,2)");
+
+                entity.HasOne(m => m.Post)
+                    .WithMany()
+                    .IsRequired()
+                    .HasForeignKey(m => m.IdPost)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(m => m.Offer)
+                    .WithMany()
+                    .HasForeignKey(m => m.IdOffer)
+                    .OnDelete(DeleteBehavior.Cascade);  
+
+            });
+
         }
     }
 }

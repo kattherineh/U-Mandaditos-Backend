@@ -23,6 +23,7 @@ namespace Infrastructure.Repositories
         {
             return await _context.Media.FindAsync(id);
         }
+
         public Task AddAsync(Media media)
         {
             _context.Media.Add(media);
