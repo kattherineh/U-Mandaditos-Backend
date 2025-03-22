@@ -1,11 +1,14 @@
 ﻿using Aplication.Interfaces;
+using Aplication.Interfaces.Helpers;
 using Aplication.Interfaces.Locations;
 using Aplication.Interfaces.Mandaditos;
 using Aplication.Interfaces.Medias;
 using Aplication.Interfaces.Offers;
+using Aplication.Interfaces.Posts;
 using Aplication.Services;
 using Infraestructure.Repositories;
 using Infrastructure.Repositories;
+using Infrastructure.Services;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Infrastructure;
@@ -31,6 +34,10 @@ public static class DependencyInjection
 
         services.AddScoped<IOfferRepository, OfferRepository>();
         services.AddScoped<IMandaditoRepository, MandaditoRepository>();
+        
+        services.AddScoped<IPostRepository, PostRepository>();
+        services.AddScoped<IPostService, PostService>();
+        services.AddScoped<IGeolocationService, GeolocationService>();
 
         return services;
     }
