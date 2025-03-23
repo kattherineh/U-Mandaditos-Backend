@@ -1,0 +1,5 @@
+DB_SERVER=localhost
+DB_PORT=5434
+DB_NAME=u_mandaditos
+DB_USER=u_mandaditos_user
+DB_PASSWORD=Pass@word
