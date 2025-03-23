@@ -43,7 +43,7 @@ public static class DependencyInjection
         
         services.AddScoped<ICodeGeneratorService, CodeGeneratorService>();
 
-        services.AddScoped<IGeolocationService, GeolocationService>();
+        // services.AddScoped<IGeolocationService, GeolocationService>();
 
         services.AddScoped<IOrderStatusHistoryRepository, OrderStatusHistoryRepository>();
 

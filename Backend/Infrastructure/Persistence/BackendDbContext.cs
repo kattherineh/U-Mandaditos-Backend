@@ -187,20 +187,19 @@ namespace Infrastructure.Persistence
                 entity.HasOne(r => r.RatedUser)  // Usuario calificado
                     .WithMany()
                     .HasForeignKey(r => r.IdRatedUser)
-                    .OnDelete(DeleteBehavior.Cascade)
+                    .OnDelete(DeleteBehavior.NoAction)
                     .IsRequired();
 
                 entity.HasOne(r => r.RaterUser)  // Usuario que califica
                     .WithMany()
                     .HasForeignKey(r => r.IdRater)
-                    .OnDelete(DeleteBehavior.Cascade)
+                    .OnDelete(DeleteBehavior.NoAction)
                     .IsRequired();
 
                 entity.HasOne(r => r.RatedRole)
                     .WithMany()
                     .HasForeignKey(r => r.IdRatedRole)
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .IsRequired();
+                    .IsRequired()
                     .OnDelete(DeleteBehavior.Restrict);  
 
                 entity.Property(r => r.RatingNum)
@@ -242,7 +241,7 @@ namespace Infrastructure.Persistence
                 entity.HasOne(m => m.User)
                     .WithMany()
                     .HasForeignKey(m => m.IdUser)
-                    .OnDelete(DeleteBehavior.Cascade)
+                    .OnDelete(DeleteBehavior.NoAction)
                     .IsRequired();
 
                 entity.HasOne(m => m.Mandadito)
