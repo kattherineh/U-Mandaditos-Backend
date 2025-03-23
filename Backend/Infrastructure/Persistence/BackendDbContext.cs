@@ -20,15 +20,18 @@ namespace Infrastructure.Persistence
         public DbSet<UserLocationHistory> UserLocationHistories { get; set; }
         public DbSet<Offer> Offers { set; get; }
         public DbSet<Mandadito> Mandaditos { set; get; }
+        public DbSet<Rating> Ratings { set; get; }
+        public DbSet<OrderStatusHistory> OrderStatusHistories { set; get; }
+        public DbSet<Message> Messages { set; get; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<User>()
-                .HasOne(u=> u.ProfilePic) //Tiene una Foto de perfil
+                .HasOne(u => u.ProfilePic) //Tiene una Foto de perfil
                 .WithOne()
-                .HasForeignKey<User>(u=> u.ProfilePicId)
+                .HasForeignKey<User>(u => u.ProfilePicId)
                 .OnDelete(DeleteBehavior.SetNull);
 
             modelBuilder.Entity<User>()
@@ -56,12 +59,12 @@ namespace Infrastructure.Persistence
             modelBuilder.Entity<Location>()
                 .Property(l => l.Longitude)
                 .HasColumnType("DECIMAL(18,8)");
-            
+
             modelBuilder.Entity<UserRole>()
                 .Property(ur => ur.Name)
                 .IsRequired()  // El nombre del rol no puede ser nulo
                 .HasMaxLength(50);  // Longitud máxima de 50 caracteres
-            
+
             modelBuilder.Entity<Post>(entity =>
             {
                 entity.HasKey(p => p.Id);
@@ -94,7 +97,7 @@ namespace Infrastructure.Persistence
                     .HasForeignKey(p => p.IdDeliveryLocation)
                     .OnDelete(DeleteBehavior.NoAction);
             });
-            
+
             modelBuilder.Entity<UserLocationHistory>(entity =>
             {
                 entity.HasKey(ulh => new { ulh.IdUser, ulh.IdLocation });
@@ -167,8 +170,93 @@ namespace Infrastructure.Persistence
                 entity.HasOne(m => m.Offer)
                     .WithMany()
                     .HasForeignKey(m => m.IdOffer)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+            });
+
+            modelBuilder.Entity<Rating>(entity =>
+            {
+                entity.HasKey(r => r.Id);
+
+                entity.HasOne(r => r.Mandadito)
+                    .WithMany()
+                    .HasForeignKey(r => r.IdMandadito)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+
+                entity.HasOne(r => r.RatedUser)  // Usuario calificado
+                    .WithMany()
+                    .HasForeignKey(r => r.IdRatedUser)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+
+                entity.HasOne(r => r.RaterUser)  // Usuario que califica
+                    .WithMany()
+                    .HasForeignKey(r => r.IdRater)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+
+                entity.HasOne(r => r.RatedRole)
+                    .WithMany()
+                    .HasForeignKey(r => r.IdRatedRole)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
                     .OnDelete(DeleteBehavior.Restrict);  
 
+                entity.Property(r => r.RatingNum)
+                    .IsRequired();
+
+                entity.Property(r => r.CreatedAt)
+                    .HasDefaultValueSql("GETDATE()");
+            });
+
+            modelBuilder.Entity<OrderStatusHistory>(entity =>
+            {
+                entity.HasKey(osh => osh.Id);
+
+                entity.HasOne(osh => osh.OrderStatus)
+                    .WithMany()
+                    .HasForeignKey(osh => osh.IdStatus)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+
+                entity.HasOne(osh => osh.Mandadito)
+                    .WithMany()
+                    .HasForeignKey(osh => osh.IdMandadito)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+
+                entity.Property(osh => osh.ChangeAt)
+                    .HasDefaultValueSql("GETDATE()")
+                    .IsRequired();
+
+                entity.Property(osh => osh.Active)
+                    .HasDefaultValue(true)
+                    .IsRequired();
+            });
+
+            modelBuilder.Entity<Message>(entity =>
+            {
+                entity.HasKey(m => m.Id);
+
+                entity.HasOne(m => m.User)
+                    .WithMany()
+                    .HasForeignKey(m => m.IdUser)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+
+                entity.HasOne(m => m.Mandadito)
+                    .WithMany()
+                    .HasForeignKey(m => m.IdMandadito)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+
+                entity.Property(m => m.Text)
+                    .IsRequired();
+
+                entity.Property(m => m.CreatedAt)
+                    .HasDefaultValueSql("GETDATE()")
+                    .IsRequired();
             });
 
         }

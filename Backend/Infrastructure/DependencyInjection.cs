@@ -6,6 +6,7 @@ using Aplication.Interfaces.Medias;
 using Aplication.Interfaces.Offers;
 using Aplication.Interfaces.Posts;
 using Aplication.Services;
+using Application.Interfaces;
 using Infraestructure.Repositories;
 using Infrastructure.Repositories;
 using Infrastructure.Services;
@@ -41,6 +42,15 @@ public static class DependencyInjection
         services.AddScoped<IPostService, PostService>();
         
         services.AddScoped<ICodeGeneratorService, CodeGeneratorService>();
+
+        services.AddScoped<IGeolocationService, GeolocationService>();
+
+        services.AddScoped<IOrderStatusHistoryRepository, OrderStatusHistoryRepository>();
+
+        services.AddScoped<IMessageRepository, MessageRepository>();
+
+        services.AddScoped<IRatingRepository, RatingRepository>();
+
         return services;
     }
 }
