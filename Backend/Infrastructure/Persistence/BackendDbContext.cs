@@ -22,6 +22,7 @@ namespace Infrastructure.Persistence
         public DbSet<Mandadito> Mandaditos { set; get; }
         public DbSet<Rating> Ratings { set; get; }
         public DbSet<OrderStatusHistory> OrderStatusHistories { set; get; }
+        public DbSet<Message> Messages { set; get; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -231,6 +232,30 @@ namespace Infrastructure.Persistence
 
                 entity.Property(osh => osh.Active)
                     .HasDefaultValue(true)
+                    .IsRequired();
+            });
+
+            modelBuilder.Entity<Message>(entity =>
+            {
+                entity.HasKey(m => m.Id);
+
+                entity.HasOne(m => m.User)
+                    .WithMany()
+                    .HasForeignKey(m => m.IdUser)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+
+                entity.HasOne(m => m.Mandadito)
+                    .WithMany()
+                    .HasForeignKey(m => m.IdMandadito)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+
+                entity.Property(m => m.Text)
+                    .IsRequired();
+
+                entity.Property(m => m.CreatedAt)
+                    .HasDefaultValueSql("GETDATE()")
                     .IsRequired();
             });
 
