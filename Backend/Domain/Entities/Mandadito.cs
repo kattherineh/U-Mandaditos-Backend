@@ -5,7 +5,7 @@ namespace Domain.Entities
     public class Mandadito: Entity
     {
         public string SecurityCode = string.Empty;
-        public decimal AcceptedRate;
+        public double AcceptedRate;
 
         public int IdPost { get; set; }
         public Post? Post { get; set; }
@@ -14,6 +14,15 @@ namespace Domain.Entities
         public Offer? Offer { get; set; }
 
         public DateTime AcceptedAt { get; set; }
-        public DateTime DeliveredAt { get; set; }
+        public DateTime? DeliveredAt { get; set; }
+        
+        public Mandadito(string securityCode, double acceptedRate, int idPost, int idOffer, DateTime acceptedAt)
+        {
+            SecurityCode = securityCode;
+            AcceptedRate = acceptedRate;
+            IdPost = idPost;
+            IdOffer = idOffer;
+            AcceptedAt = acceptedAt;
+        }
     }
 }
