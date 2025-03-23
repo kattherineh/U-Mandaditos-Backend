@@ -4,5 +4,5 @@ namespace Aplication.Interfaces.Posts;
 
 public interface IPostService
 {
-    Task<IEnumerable<PostReponseDTO>> GetAllNearAsync(double lat, double lon);
+    Task<IEnumerable<PostReponseDTO>> GetAllNearAsync(int currentLocationId);
 }

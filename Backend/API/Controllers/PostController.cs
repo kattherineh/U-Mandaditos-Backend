@@ -15,9 +15,9 @@ public class PostController : ControllerBase
     }
     
     [HttpGet("near")]
-    public async Task<IActionResult> GetNear([FromQuery] double lat,[FromQuery] double lon)
+    public async Task<IActionResult> GetNear([FromQuery] int currentLocationId)
     {
-        var posts = await _postService.GetAllNearAsync(lat, lon);
+        var posts = await _postService.GetAllNearAsync(currentLocationId);
         return Ok(posts);
     }
     
