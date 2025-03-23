@@ -4,6 +4,7 @@ using Aplication.Interfaces.Mandaditos;
 using Aplication.Interfaces.Medias;
 using Aplication.Interfaces.Offers;
 using Aplication.Services;
+using Application.Interfaces;
 using Infraestructure.Repositories;
 using Infrastructure.Repositories;
 using Microsoft.Extensions.DependencyInjection;
@@ -31,6 +32,12 @@ public static class DependencyInjection
 
         services.AddScoped<IOfferRepository, OfferRepository>();
         services.AddScoped<IMandaditoRepository, MandaditoRepository>();
+
+        services.AddScoped<IOrderStatusHistoryRepository, OrderStatusHistoryRepository>();
+
+        services.AddScoped<IMessageRepository, MessageRepository>();
+
+        services.AddScoped<IRatingRepository, RatingRepository>();
 
         return services;
     }
