@@ -4,7 +4,7 @@ namespace Domain.Entities
 {
     public class Offer: Entity
     {
-        public decimal CounterOfferAmount {  get; set; }
+        public double CounterOfferAmount {  get; set; }
 
         public int IdPost {  get; set; }
         public Post? Post { get; set; }
