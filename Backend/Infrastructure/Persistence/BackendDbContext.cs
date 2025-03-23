@@ -162,12 +162,12 @@ namespace Infrastructure.Persistence
                     .WithMany()
                     .IsRequired()
                     .HasForeignKey(m => m.IdPost)
-                    .OnDelete(DeleteBehavior.Cascade);
+                    .OnDelete(DeleteBehavior.Restrict);
 
                 entity.HasOne(m => m.Offer)
                     .WithMany()
                     .HasForeignKey(m => m.IdOffer)
-                    .OnDelete(DeleteBehavior.Cascade);  
+                    .OnDelete(DeleteBehavior.Restrict);  
 
             });
 
