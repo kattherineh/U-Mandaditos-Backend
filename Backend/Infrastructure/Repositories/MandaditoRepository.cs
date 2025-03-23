@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories
 {
-    public class MandaditoRepository: IMandaditoRepository
+    public class MandaditoRepository : IMandaditoRepository
     {
         private readonly BackendDbContext _context;
 
@@ -16,12 +16,46 @@ namespace Infrastructure.Repositories
 
         public async Task<IEnumerable<Mandadito>> GetAllAsync()
         {
-            return await _context.Mandaditos.ToListAsync();
+            return await _context.Mandaditos
+                .Include(m => m.Post)
+                    .ThenInclude(p => p!.PosterUser)
+                        .ThenInclude(u => u.LastLocation)
+                .Include(m => m.Post)
+                    .ThenInclude(p => p!.PosterUser)
+                        .ThenInclude(u => u.ProfilePic)
+                .Include(m => m.Post)
+                    .ThenInclude(p => p!.PickUpLocation)
+                .Include(m => m.Post)
+                    .ThenInclude(p => p!.DeliveryLocation)
+                .Include(m => m.Offer)
+                    .ThenInclude(o => o!.UserCreator)
+                        .ThenInclude(u => u!.LastLocation)
+                .Include(m=> m.Offer)
+                    .ThenInclude(o => o!.UserCreator)
+                        .ThenInclude(u => u!.ProfilePic)
+                .ToListAsync();
         }
 
         public async Task<Mandadito?> GetByIdAsync(int id)
         {
-            return await _context.Mandaditos.FindAsync(id);
+            return await _context.Mandaditos
+                .Include(m => m.Post)
+                    .ThenInclude(p => p!.PosterUser)
+                        .ThenInclude(u => u.LastLocation)
+                .Include(m => m.Post)
+                    .ThenInclude(p => p!.PosterUser)
+                        .ThenInclude(u => u.ProfilePic)
+                .Include(m => m.Post)
+                    .ThenInclude(p => p!.PickUpLocation)
+                .Include(m => m.Post)
+                    .ThenInclude(p => p!.DeliveryLocation)
+                .Include(m => m.Offer)
+                    .ThenInclude(o => o!.UserCreator)
+                        .ThenInclude(u => u!.LastLocation)
+                .Include(m=> m.Offer)
+                    .ThenInclude(o => o!.UserCreator)
+                        .ThenInclude(u => u!.ProfilePic)
+                .FirstOrDefaultAsync(p => p.Id == id);
         }
 
         public async Task AddAsync(Mandadito mandadito)

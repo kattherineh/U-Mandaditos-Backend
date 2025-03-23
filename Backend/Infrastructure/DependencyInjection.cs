@@ -33,12 +33,14 @@ public static class DependencyInjection
         services.AddScoped<ICareerService, CareerService>();
 
         services.AddScoped<IOfferRepository, OfferRepository>();
+        
         services.AddScoped<IMandaditoRepository, MandaditoRepository>();
+        services.AddScoped<IMandaditoService, MandaditoService>();
         
         services.AddScoped<IPostRepository, PostRepository>();
         services.AddScoped<IPostService, PostService>();
-        services.AddScoped<IGeolocationService, GeolocationService>();
-
+        
+        services.AddScoped<ICodeGeneratorService, CodeGeneratorService>();
         return services;
     }
 }
