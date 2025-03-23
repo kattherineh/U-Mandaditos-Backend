@@ -9,15 +9,18 @@ var builder = WebApplication.CreateBuilder(args);
 var dbConfig = new DatabaseConfig();
 
 // Introduction message to show in console
-string jsonContent = File.ReadAllText("version.json");
-
-using (JsonDocument doc = JsonDocument.Parse(jsonContent))
+string? version = builder.Configuration[key: "version"];
+if (version != null)
 {
-    string version = doc.RootElement.GetProperty("version").GetString();
     Console.WriteLine($"U-Mandaditos API v{version}");
+}
+else
+{
+    Console.WriteLine("U-Mandaditos API version not found");
 }
 
 // Testing database connection
+
 if (dbConfig.TestConnection())
 {
     Console.ForegroundColor = ConsoleColor.Green;
