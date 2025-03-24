@@ -1,9 +1,11 @@
 ﻿using Aplication.DTOs.Media;
 using Aplication.Interfaces.Medias;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/media")]
     public class MediaController: ControllerBase

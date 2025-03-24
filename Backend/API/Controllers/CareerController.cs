@@ -1,8 +1,10 @@
 using Aplication.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/careers")]
 public class CareerController : ControllerBase

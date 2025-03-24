@@ -1,8 +1,11 @@
-using System.Text.Json;
+using System.Text;
 using API.Configuration;
 using Infrastructure;
+using Infrastructure.Configuration;
 using Infrastructure.Persistence;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +22,8 @@ else
     Console.WriteLine("U-Mandaditos API version not found");
 }
 
+Console.WriteLine($"Up at {DateTime.Now}");
+
 // Testing database connection
 
 if (dbConfig.TestConnection())
@@ -31,10 +36,42 @@ else
     Console.ForegroundColor = ConsoleColor.Red;
     Console.WriteLine("Connection failed to U-Mandaditos database\n");
 }
-
-
 Console.ResetColor();
 
+// Cargar configuracion de Jwt para Autenticación
+builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
+
+builder.Services.AddAuthorization();
+
+builder.Services.AddAuthentication("Bearer").AddJwtBearer( options =>
+{
+    var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:SecretKey"]));
+    var signingCredentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256Signature);
+
+    options.RequireHttpsMetadata = false;
+
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateAudience = false,
+        ValidateIssuer = false,
+        IssuerSigningKey = signingKey
+    };
+
+    // Personalizar error
+    options.Events = new JwtBearerEvents
+    {
+        OnChallenge = context =>
+        {
+            // Personalizar el error 401 (Unauthorized)
+            context.Response.StatusCode = 401;
+            context.Response.ContentType = "application/json";
+            return context.Response.WriteAsync(
+                "{ \"success\": false, \"message\": \"Token inválido, expirado o no existente\"}"
+            );
+        }
+    };
+
+});
 
 // Add services to the container.
 builder.Services.AddDbContext<BackendDbContext>(options => options.UseSqlServer(dbConfig.ConnectionString));
@@ -56,6 +93,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

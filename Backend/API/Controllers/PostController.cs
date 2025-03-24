@@ -1,8 +1,10 @@
 ﻿using Aplication.Interfaces.Posts;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/posts")]
 public class PostController : ControllerBase

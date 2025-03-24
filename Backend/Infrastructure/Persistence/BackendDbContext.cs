@@ -48,8 +48,8 @@ namespace Infrastructure.Persistence
 
             modelBuilder.Entity<SessionLog>()
                 .HasOne(s => s.User)
-                .WithOne()
-                .HasForeignKey<SessionLog>(s => s.UserId)
+                .WithMany()
+                .HasForeignKey(s => s.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Location>()
