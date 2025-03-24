@@ -43,13 +43,15 @@ public static class DependencyInjection
         
         services.AddScoped<ICodeGeneratorService, CodeGeneratorService>();
 
-        // services.AddScoped<IGeolocationService, GeolocationService>();
+        services.AddScoped<IFirebaseStorageService, FirebaseStorageService>();
 
         services.AddScoped<IOrderStatusHistoryRepository, OrderStatusHistoryRepository>();
 
         services.AddScoped<IMessageRepository, MessageRepository>();
 
         services.AddScoped<IRatingRepository, RatingRepository>();
+        
+        
 
         return services;
     }
