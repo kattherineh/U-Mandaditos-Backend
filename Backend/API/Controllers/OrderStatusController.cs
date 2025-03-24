@@ -1,9 +1,11 @@
 ﻿using Aplication.DTOs;
 using Aplication.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/orderStatus")]
 public class OrderStatusController : ControllerBase

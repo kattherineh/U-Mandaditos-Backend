@@ -1,10 +1,12 @@
 ﻿using Aplication.Interfaces;
+using Aplication.Interfaces.Auth;
 using Aplication.Interfaces.Helpers;
 using Aplication.Interfaces.Locations;
 using Aplication.Interfaces.Mandaditos;
 using Aplication.Interfaces.Medias;
 using Aplication.Interfaces.Offers;
 using Aplication.Interfaces.Posts;
+using Aplication.Interfaces.SessionLogs;
 using Aplication.Services;
 using Application.Interfaces;
 using Infraestructure.Repositories;
@@ -43,13 +45,18 @@ public static class DependencyInjection
         
         services.AddScoped<ICodeGeneratorService, CodeGeneratorService>();
 
-        // services.AddScoped<IGeolocationService, GeolocationService>();
-
         services.AddScoped<IOrderStatusHistoryRepository, OrderStatusHistoryRepository>();
 
         services.AddScoped<IMessageRepository, MessageRepository>();
 
         services.AddScoped<IRatingRepository, RatingRepository>();
+
+        services.AddScoped<IAuthRepository, AuthRepository>();
+        services.AddScoped<IAuthService, AuthService>();
+
+        services.AddScoped<IJwtService, JwtService>();
+
+        services.AddScoped<ISessionLogRepository, SessionLogRepository>();
 
         return services;
     }

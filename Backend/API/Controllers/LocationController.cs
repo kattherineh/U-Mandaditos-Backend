@@ -1,8 +1,10 @@
 ﻿using Aplication.Interfaces.Locations;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/locations")]
     public class LocationController: ControllerBase
@@ -19,7 +21,7 @@ namespace API.Controllers
         {
             var locations = await _locationService.GetAllAsync();
 
-            return Ok(locations);
+            return locations is null ? Unauthorized("No autorizado.") : Ok(locations);
         }
 
 
