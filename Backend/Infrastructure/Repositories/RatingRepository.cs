@@ -15,12 +15,57 @@ namespace Infrastructure.Repositories
         }
         public async Task<IEnumerable<Rating>> GetAllAsync()
         {
-            return await _context.Ratings.ToListAsync();
+            return await _context.Ratings
+                .Include(r => r.Mandadito)
+                    .ThenInclude(m => m!.Post)
+                        .ThenInclude(p => p!.PosterUser)
+                            .ThenInclude(u => u.LastLocation)
+                .Include(r => r.Mandadito)
+                    .ThenInclude(m => m!.Post)
+                        .ThenInclude(p => p!.PosterUser)
+                            .ThenInclude(u => u.ProfilePic)
+                .Include(r => r.Mandadito)
+                    .ThenInclude(m => m!.Post)
+                        .ThenInclude(p => p!.PosterUser)
+                            .ThenInclude(u => u.Career)
+                .Include(r => r.Mandadito)
+                    .ThenInclude(m => m!.Post)
+                        .ThenInclude(p => new { p!.DeliveryLocation, p.PickUpLocation })
+                .Include(r => r.Mandadito)
+                    .ThenInclude(m => m!.Offer)
+                        .ThenInclude(o => o!.UserCreator)
+                            .ThenInclude(u => new { u!.Career, u.LastLocation, u.ProfilePic })
+                .Include(r => r.RaterUser)
+                    .ThenInclude(u => new { u!.LastLocation, u.ProfilePic, u.Career })
+                .Include(r => r.RatedUser)
+                    .ThenInclude(u => new { u!.LastLocation, u.ProfilePic, u.Career })
+                .Include(r => r.RatedRole)
+                .ToListAsync();
         }
 
         public async Task<Rating?> GetByIdAsync(int id)
         {
-            return await _context.Ratings.FindAsync(id);
+            return await _context.Ratings
+                .Include(r => r.Mandadito)
+                    .ThenInclude(m => m!.Post)
+                        .ThenInclude(p => p!.PosterUser)
+                            .ThenInclude(u => new { u!.LastLocation, u.ProfilePic, u.Career })
+                .Include(r => r.Mandadito)
+                    .ThenInclude(m => m!.Post)
+                                .ThenInclude(p => p!.DeliveryLocation)
+                        .Include(r => r.Mandadito)
+                            .ThenInclude(m => m!.Post)
+                                .ThenInclude(p => p!.PickUpLocation)
+                        .Include(r => r.Mandadito)
+                    .ThenInclude(m => m!.Offer)
+                        .ThenInclude(o => o!.UserCreator)
+                            .ThenInclude(u => new { u!.Career, u.LastLocation, u.ProfilePic })
+                .Include(r => r.RaterUser)
+                    .ThenInclude(u => new { u!.LastLocation, u.ProfilePic, u.Career })
+                .Include(r => r.RatedUser)
+                    .ThenInclude(u => new { u!.LastLocation, u.ProfilePic, u.Career })
+                .Include(r => r.RatedRole)
+                .FirstOrDefaultAsync(r => r.Id == id);
         }
 
         public async Task AddAsync(Rating rating)
