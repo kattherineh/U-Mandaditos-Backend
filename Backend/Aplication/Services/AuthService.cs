@@ -1,5 +1,7 @@
 ﻿using Aplication.DTOs.Auth.Login;
+using Aplication.DTOs.General;
 using Aplication.Interfaces.Auth;
+using Aplication.Interfaces.Helpers;
 using Aplication.Interfaces.SessionLogs;
 using Domain.Auth;
 using Domain.Entities;
@@ -18,7 +20,7 @@ namespace Aplication.Services
             _sessionLogRepository = sessionLogRepository;
         }
 
-        public async Task<LoginResponseDTO?> Login(LoginRequestDTO login)
+        public async Task<ResponseDTO<LoginResponseDTO>> Login(LoginRequestDTO login)
         {
             try
             {
@@ -30,52 +32,47 @@ namespace Aplication.Services
 
                 if (loggedUser is null)
                 {
-                    return new LoginResponseDTO
+                    return new ResponseDTO<LoginResponseDTO>
                     {
-                        Email = null,
-                        FullName = null,
-                        Token = null,
-                        Expiration = DateTime.MinValue,
                         Success = false,
-                        Message = "Credenciales erroneas"
+                        Message = "Error: Usuario o contraseña incorrectos",
+                        Data = null
                     };
                 }
 
                 // Generar token
                 var token = _jwtService.GenerateToken(loggedUser);
 
-                // Registrar log d einicio de sesión
+                // Registrar log de Inicio de Sesión
                 var sessionLog = new SessionLog
                 {
                     IpAddress = login.IPAddress ?? throw new ArgumentNullException(nameof(login.IPAddress)),
                     DeviceInfo = login.DeviceInfo ?? throw new ArgumentNullException(nameof(login.DeviceInfo)),
                     StartedAt = DateTime.Now,
-                    EndedAt = TimeZoneInfo.ConvertTimeFromUtc( token.Expires, TimeZoneInfo.Local ),
+                    EndedAt = null,
                     UserId = loggedUser.Id,
-                    User = loggedUser,
-                    AccessToken = token.TokenR
-                }; 
+                    User = loggedUser
+                };
 
                 await _sessionLogRepository.AddAsync(sessionLog);
-
-                return new LoginResponseDTO
+               
+                return new ResponseDTO<LoginResponseDTO>
                 {
-                    Email = loggedUser.Email,
-                    FullName = loggedUser.Name,
-                    Token = token.TokenR,
-                    Expiration = token.Expires,
                     Success = true,
-                    Message = "Inicio de sesión exitoso"
+                    Message = "Inicio de sesión exitoso",
+                    Data = new LoginResponseDTO
+                    {
+                        Email = loggedUser.Email,
+                        FullName = loggedUser.Name,
+                        Token = token.TokenR,
+                        Expiration = token.Expires,
+                    }
                 };
             }
             catch
             {
-                return new LoginResponseDTO
+                return new ResponseDTO<LoginResponseDTO>
                 {
-                    Email = null,
-                    FullName = null,
-                    Token = null,
-                    Expiration = DateTime.MinValue,
                     Success = false,
                     Message = "Inicio de sesión fallido"
                 };

@@ -1,8 +1,10 @@
+using Aplication.DTOs.General;
+using System.Threading.Tasks;
 using Aplication.DTOs.Users;
 
 namespace Aplication.Interfaces.Users;
 
 public interface IUserService
 {
-    Task<UserResponseDTO> CreateUserAsync(UserRequestDTO userRequest);
+    Task<ResponseDTO<UserResponseDTO>> CreateUserAsync(UserRequestDTO userRequest);
 }

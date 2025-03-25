@@ -1,5 +1,5 @@
 ﻿using Aplication.DTOs.Auth.Jwt;
-using Aplication.Interfaces.Auth;
+using Aplication.Interfaces.Helpers;
 using Domain.Entities;
 using Infrastructure.Configuration;
 using Microsoft.Extensions.Options;
