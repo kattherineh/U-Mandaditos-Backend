@@ -12,8 +12,4 @@ Backend/API/.env
 Backend/*/Migrations
 Backend/.idea/
 Backend/.idea/*
-Backend/.vs/
-Backend/.vs/*
-Backend/API/.vs/
-Backend/API/.env.local
-
+Backend/Infrastructure/umandaditos_firebase.json
