@@ -1,10 +1,12 @@
-﻿using Aplication.DTOs.Locations;
+﻿using Aplication.DTOs.Auth.Login;
+using Aplication.DTOs.General;
+using Aplication.DTOs.Locations;
 
 namespace Aplication.Interfaces.Locations
 {
     public interface ILocationService
     {
-        Task<IEnumerable<LocationResponseDTO>> GetAllAsync();
-        Task<LocationResponseDTO> GetByIdAsync(int id);
+        Task<ResponseDTO<IEnumerable<LocationResponseDTO>>> GetAllAsync();
+        Task<ResponseDTO<LocationResponseDTO>> GetByIdAsync(int id);
     }
 }

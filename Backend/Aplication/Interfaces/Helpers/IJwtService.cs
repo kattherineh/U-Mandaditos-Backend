@@ -1,7 +1,7 @@
 ﻿using Aplication.DTOs.Auth.Jwt;
 using Domain.Entities;
 
-namespace Aplication.Interfaces.Auth
+namespace Aplication.Interfaces.Helpers
 {
     public interface IJwtService
     {

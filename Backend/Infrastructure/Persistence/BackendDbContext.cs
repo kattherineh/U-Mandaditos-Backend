@@ -28,22 +28,27 @@ namespace Infrastructure.Persistence
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<User>()
+            modelBuilder.Entity<User>(entity =>
+            {
+                entity
                 .HasOne(u => u.ProfilePic) //Tiene una Foto de perfil
                 .WithOne()
                 .HasForeignKey<User>(u => u.ProfilePicId)
                 .OnDelete(DeleteBehavior.SetNull);
 
+                entity.HasIndex(u => u.Dni).IsUnique();
+            });
+
             modelBuilder.Entity<User>()
                 .HasOne(u => u.LastLocation) //Tiene una location
-                .WithOne()
-                .HasForeignKey<User>(u => u.LastLocationId)
+                .WithMany()
+                .HasForeignKey(u => u.LastLocationId)
                 .OnDelete(DeleteBehavior.SetNull);
 
             modelBuilder.Entity<User>()
                 .HasOne(u => u.Career) //Tiene una carrera
-                .WithOne()
-                .HasForeignKey<User>(u => u.CareerId)
+                .WithMany()
+                .HasForeignKey(u => u.CareerId)
                 .OnDelete(DeleteBehavior.SetNull);
 
             modelBuilder.Entity<SessionLog>(entity =>
