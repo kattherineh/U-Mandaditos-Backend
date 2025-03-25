@@ -25,7 +25,8 @@ namespace Infrastructure.Services
             {
                 new Claim(ClaimTypes.Email, user.Email), // Encapsula el email del usuario
                 new Claim(ClaimTypes.Name, user.Name),
-                new Claim(ClaimTypes.PrimarySid, user.Dni)
+                new Claim("IdUser", user.Id.ToString()),
+                new Claim("DNI", user.Dni)
             };
 
             var key = _jwtSettings.SecretKey;

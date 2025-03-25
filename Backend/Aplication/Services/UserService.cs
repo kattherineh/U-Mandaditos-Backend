@@ -1,10 +1,12 @@
+using Aplication.DTOs;
 using Aplication.DTOs.General;
+using Aplication.DTOs.Locations;
+using Aplication.DTOs.Media;
 using Aplication.DTOs.Users;
 using Aplication.Interfaces;
 using Aplication.Interfaces.Helpers;
 using Aplication.Interfaces.Users;
 using Domain.Entities;
-using Microsoft.AspNetCore.Http;
 
 namespace Aplication.Services;
 
@@ -78,5 +80,67 @@ public class UserService: IUserService
             };
         }
         
+    }
+
+    public async Task<ResponseDTO<UserProfileResponseDTO>> GetByIdAsync(int id)
+    {
+        try
+        {
+            var user = await _userRepository.GetByIdAsync(id);
+
+            if (user is null)
+            {
+                return new ResponseDTO<UserProfileResponseDTO>
+                {
+                    Success = false,
+                    Message = $"Usuario con id={id} no encontrado"
+                };
+            }
+
+            var data = new UserProfileResponseDTO
+            {
+                Name = user.Name,
+                Dni = user.Dni,
+                Email = user.Email,
+                BirthDay = user.BirthDay,
+                Score = user.Rating,
+                ProfilePic = new MediaResponseDTO
+                {
+                    Id = user.ProfilePic.Id,
+                    Name = user.ProfilePic.Name,
+                    Link = user.ProfilePic.Link
+                },
+                LastLocation = new LastLocationUserDTO
+                {
+                    Description = user.LastLocation.Description,
+                    Name = user.LastLocation.Name,
+                    Id = user.LastLocation.Id
+                },
+                Career = new CareerResponseDTO
+                {
+                    Id = user.Career.Id,
+                    Name = user.Career.Name
+                }
+            };
+
+            return new ResponseDTO<UserProfileResponseDTO>
+            {
+                Success = true,
+                Message = $"La información del usuario con id={id} fue obtenida satisfactoriamente",
+                Data = data
+            };
+        }
+        catch(Exception e)
+        {
+            Console.WriteLine(e.Message);
+            return new ResponseDTO<UserProfileResponseDTO>
+            {
+                Success = false,
+                Message = $"Ocurrió un error al obtener al usuario con id={id}"
+            };
+        }
+
+
+        return null;
     }
 }

@@ -1,5 +1,6 @@
 using Aplication.DTOs.Users;
 using Aplication.Interfaces.Users;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
@@ -25,6 +26,21 @@ public class UserController: ControllerBase
             var user = await _userService.CreateUserAsync(userRequest);
         
             return Ok(user);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+        }
+    }
+
+    [Authorize]
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetByIdAsync(int id)
+    {
+        try
+        {
+            var res = await _userService.GetByIdAsync(id);
+            return Ok(res);
         }
         catch (Exception ex)
         {
