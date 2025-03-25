@@ -46,12 +46,14 @@ namespace Infrastructure.Persistence
                 .HasForeignKey<User>(u => u.CareerId)
                 .OnDelete(DeleteBehavior.SetNull);
 
-            modelBuilder.Entity<SessionLog>()
-                .HasOne(s => s.User)
+            modelBuilder.Entity<SessionLog>(entity =>
+            {
+                entity.HasOne(s => s.User)
                 .WithMany()
                 .HasForeignKey(s => s.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
-
+            });
+                
             modelBuilder.Entity<Location>()
                 .Property(l => l.Latitude)
                 .HasColumnType("DECIMAL(18,8)");
