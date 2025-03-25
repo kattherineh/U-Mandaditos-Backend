@@ -8,6 +8,8 @@ public class SessionLog : Entity
     public string DeviceInfo { get; set; } = string.Empty;
     public DateTime StartedAt { get; set; }
     public DateTime? EndedAt { get; set; }
+
+    public string? AccessToken { get; set; }
     
     public int UserId { get; set; }
     public User? User { get; set; }

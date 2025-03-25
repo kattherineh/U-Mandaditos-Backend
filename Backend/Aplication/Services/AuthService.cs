@@ -44,17 +44,17 @@ namespace Aplication.Services
                 // Generar token
                 var token = _jwtService.GenerateToken(loggedUser);
 
-                // Registrar log de Inicio de Sesión
-
+                // Registrar log d einicio de sesión
                 var sessionLog = new SessionLog
                 {
                     IpAddress = login.IPAddress ?? throw new ArgumentNullException(nameof(login.IPAddress)),
                     DeviceInfo = login.DeviceInfo ?? throw new ArgumentNullException(nameof(login.DeviceInfo)),
                     StartedAt = DateTime.Now,
-                    EndedAt = null,
+                    EndedAt = TimeZoneInfo.ConvertTimeFromUtc( token.Expires, TimeZoneInfo.Local ),
                     UserId = loggedUser.Id,
-                    User = loggedUser
-                };
+                    User = loggedUser,
+                    AccessToken = token.TokenR
+                }; 
 
                 await _sessionLogRepository.AddAsync(sessionLog);
 
