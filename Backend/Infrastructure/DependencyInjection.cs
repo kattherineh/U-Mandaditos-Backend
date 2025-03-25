@@ -5,6 +5,7 @@ using Aplication.Interfaces.Mandaditos;
 using Aplication.Interfaces.Medias;
 using Aplication.Interfaces.Offers;
 using Aplication.Interfaces.Posts;
+using Aplication.Interfaces.Users;
 using Aplication.Services;
 using Application.Interfaces;
 using Infraestructure.Repositories;
@@ -50,6 +51,9 @@ public static class DependencyInjection
         services.AddScoped<IMessageRepository, MessageRepository>();
 
         services.AddScoped<IRatingRepository, RatingRepository>();
+        
+        services.AddScoped<IUserService, UserService>();
+        services.AddScoped<IUserRepository, UserRepository>();
         
         
 
