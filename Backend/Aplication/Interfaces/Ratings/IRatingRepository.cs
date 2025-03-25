@@ -9,6 +9,6 @@ namespace Aplication.Interfaces {
         Task AddAsync(Rating rating);
         Task<bool> UpdateAsync(Rating rating);
         Task<bool> DeleteAsync(int id);
-
+        Task<IEnumerable<Rating>> GetByRatedUserAsync(int idRatedUser);
     }
 }

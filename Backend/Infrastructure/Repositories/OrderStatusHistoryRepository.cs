@@ -71,6 +71,31 @@ namespace Infrastructure.Repositories
             return result > 0;
         }
 
+        public async Task<IEnumerable<OrderStatusHistory>> GetAllByMandaditoAsync(int mandaditoId)
+        {
+            return await _context.OrderStatusHistories
+                .Include(o => o.OrderStatus)
+                    .ThenInclude(o => o!.Name)
+                .Where(o => o.IdMandadito == mandaditoId)
+                .ToListAsync();
+        }
+
+        public async Task<bool> UpdateActiveAsync(int id, bool active)
+        {
+            var existingOrderStatusHistory = await _context.OrderStatusHistories
+                .FirstOrDefaultAsync(o => o.Id == id);
+
+            if (existingOrderStatusHistory == null)
+            {
+                return false;
+            }
+
+            existingOrderStatusHistory.Active = active;
+            _context.OrderStatusHistories.Update(existingOrderStatusHistory);
+            var result = await _context.SaveChangesAsync();
+            return result > 0;
+        }
+
         public async Task<bool> DeleteAsync(int id)
         {
             var orderStatusHistory = await _context.OrderStatusHistories.FindAsync(id);

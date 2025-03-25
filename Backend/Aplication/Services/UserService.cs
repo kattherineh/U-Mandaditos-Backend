@@ -69,7 +69,7 @@ public class UserService: IUserService
 
             if (errorMessage.Contains("The INSERT statement conflicted") && errorMessage.Contains("Careers"))
             {
-                errorMessage = "Error: Se está haciendo referencia a una carrera inexistente.";
+                errorMessage = "Error: Se estï¿½ haciendo referencia a una carrera inexistente.";
             }
 
             return new ResponseDTO<UserResponseDTO>
@@ -126,7 +126,7 @@ public class UserService: IUserService
             return new ResponseDTO<UserProfileResponseDTO>
             {
                 Success = true,
-                Message = $"La información del usuario con id={id} fue obtenida satisfactoriamente",
+                Message = $"La informaciï¿½n del usuario con id={id} fue obtenida satisfactoriamente",
                 Data = data
             };
         }
@@ -136,7 +136,7 @@ public class UserService: IUserService
             return new ResponseDTO<UserProfileResponseDTO>
             {
                 Success = false,
-                Message = $"Ocurrió un error al obtener al usuario con id={id}"
+                Message = $"Ocurriï¿½ un error al obtener al usuario con id={id}"
             };
         }
 
