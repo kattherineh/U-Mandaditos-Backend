@@ -17,12 +17,45 @@ namespace Infrastructure.Repositories
 
         public async Task<IEnumerable<OrderStatusHistory>> GetAllAsync()
         {
-            return await _context.OrderStatusHistories.ToListAsync();
+            return await _context.OrderStatusHistories
+                .Include(o => o.Mandadito)
+                    .ThenInclude(m => m!.Post)
+                        .ThenInclude(p => p!.PosterUser)
+                            .ThenInclude(u => new { u.LastLocation, u.ProfilePic, u.Career })
+                .Include(o => o.Mandadito)
+                    .ThenInclude(m => m!.Post)
+                        .ThenInclude(p => new { p!.DeliveryLocation, p.PickUpLocation })
+                .Include(o => o.Mandadito)
+                    .ThenInclude(m => m!.Offer)
+                        .ThenInclude(o => o!.UserCreator)
+                            .ThenInclude(u => new { u!.Career, u.LastLocation, u.ProfilePic })
+                .Include(o => o.OrderStatus)
+                .ToListAsync();
         }
 
         public async Task<OrderStatusHistory?> GetByIdAsync(int id)
         {
-            return await _context.OrderStatusHistories.FindAsync(id);
+            return await _context.OrderStatusHistories
+                .Include(o => o.Mandadito)
+                    .ThenInclude(m => m!.Post)
+                        .ThenInclude(p => p!.PosterUser)
+                            .ThenInclude(u => u.LastLocation)
+                .Include(o => o.Mandadito)
+                    .ThenInclude(m => m!.Post)
+                        .ThenInclude(p => p!.PosterUser)
+                            .ThenInclude(u => u.ProfilePic)
+                .Include(o => o.Mandadito)
+                    .ThenInclude(m => m!.Post)
+                        .ThenInclude(p => p!.PosterUser)
+                            .ThenInclude(u => u.Career)
+                .Include(o => o.Mandadito)
+                    .ThenInclude(m => m!.Post)
+                        .ThenInclude(p => new { p!.DeliveryLocation, p.PickUpLocation })
+                .Include(o => o.Mandadito)
+                    .ThenInclude(m => m!.Offer)
+                        .ThenInclude(o => o!.UserCreator)
+                            .ThenInclude(u => new { u!.Career, u.LastLocation, u.ProfilePic })
+                .FirstOrDefaultAsync(o => o.Id == id);
         }
 
         public async Task AddAsync(OrderStatusHistory orderStatusHistory)

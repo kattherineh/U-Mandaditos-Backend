@@ -12,6 +12,8 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.3.0" />
+    <PackageReference Include="Azure.Core" Version="1.38.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.3.0" />
   </ItemGroup>
 
 </Project>
