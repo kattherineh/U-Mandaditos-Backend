@@ -9,4 +9,6 @@ public interface IPostRepository
     Task AddAsync(Post post);
     Task<bool> UpdateAsync(Post post);
     Task<bool> DeleteAsync(int id);
+    Task<IEnumerable<Post>> GetPostsNearLocationAsync(int idLocation, double radiusMeters);
+    Task<IEnumerable<Post>> GetPostsByPosterUserId(int idPosterUser);
 }
