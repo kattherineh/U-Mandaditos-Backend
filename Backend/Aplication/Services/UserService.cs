@@ -113,12 +113,12 @@ public class UserService: IUserService
                     Name = user.ProfilePic.Name,
                     Link = user.ProfilePic.Link
                 },
-                LastLocation = new LastLocationUserDTO
+                LastLocation = user.LastLocation != null ? new LastLocationUserDTO
                 {
                     Description = user.LastLocation.Description,
                     Name = user.LastLocation.Name,
                     Id = user.LastLocation.Id
-                },
+                } : null,
                 Career = new CareerResponseDTO
                 {
                     Id = user.Career.Id,
