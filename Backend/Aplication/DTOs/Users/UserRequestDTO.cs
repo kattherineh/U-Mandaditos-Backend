@@ -8,7 +8,7 @@ public class UserRequestDTO
     public string password { get; set; }
     public int career { get; set; }
     public string dni { get; set; }
-    public  string phone { get; set; }
+
     public DateTime birthday { get; set; }
     public IFormFile Photo { get; set; }
 }

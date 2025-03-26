@@ -8,4 +8,5 @@ public interface IUserService
 {
     Task<ResponseDTO<UserResponseDTO>> CreateUserAsync(UserRequestDTO userRequest);
     Task<ResponseDTO<UserProfileResponseDTO>> GetByIdAsync(int id);
+    Task<ResponseDTO<UpdatedResponseDTO>> UpdateAsync(int id, UserProfileRequestDTO user);
 }
