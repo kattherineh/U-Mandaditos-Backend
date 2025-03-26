@@ -1,17 +1,18 @@
 using System.Text;
 using API.Configuration;
 using Infrastructure;
-using Infrastructure.Configuration;
 using Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using DotNetEnv;
+using Infrastructure.Configuration;
 
-DotNetEnv.Env.Load();
+Env.Load();
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Agregar configuraciÃ³n desde variables de entorno y appsettings.json
+// Agregar configuración desde variables de entorno y appsettings.json
 builder.Configuration
     .SetBasePath(Directory.GetCurrentDirectory())
     .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
@@ -33,7 +34,6 @@ else
 Console.WriteLine($"Up at {DateTime.Now}");
 
 // Testing database connection
-
 if (dbConfig.TestConnection())
 {
     Console.ForegroundColor = ConsoleColor.Green;
@@ -47,38 +47,52 @@ else
 Console.ResetColor();
 
 // Cargar configuracion de Jwt para Autenticación
-builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
+
+// Configurar el binding de las variables de entorno para JwtSettings
+builder.Services.Configure<JwtSettings>(options =>
+{
+    options.SecretKey = builder.Configuration["JWT_SECRET_KEY"];
+    options.ExpirationMinutes = double.Parse(builder.Configuration["JWT_EXPIRATION_MINUTES"] ?? "15.0"); 
+});
 
 builder.Services.AddAuthorization();
 
-builder.Services.AddAuthentication("Bearer").AddJwtBearer( options =>
-{
-    var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:SecretKey"]));
-    var signingCredentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256Signature);
-
-    options.RequireHttpsMetadata = false;
-
-    options.TokenValidationParameters = new TokenValidationParameters
+builder.Services.AddAuthentication("Bearer")
+    .AddJwtBearer(options =>
     {
-        ValidateAudience = false,
-        ValidateIssuer = false,
-        IssuerSigningKey = signingKey
-    };
+        // Aquí, usamos builder.Configuration para acceder a las configuraciones directamente.
+        var secretKey = builder.Configuration["JWT_SECRET_KEY"];
 
-    // Personalizar error
-    options.Events = new JwtBearerEvents
-    {
-        OnChallenge = context =>
+        if (string.IsNullOrEmpty(secretKey))
         {
-            // Personalizar el error 401 (Unauthorized)
-            context.Response.StatusCode = 401;
-            context.Response.ContentType = "application/json";
-            return context.Response.WriteAsync(
-                "{ \"success\": false, \"message\": \"Token inválido, expirado o no existente\"}"
-            );
+            throw new InvalidOperationException("La clave secreta JWT no está configurada.");
         }
-    };
 
+        var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
+        var signingCredentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256Signature);
+
+        options.RequireHttpsMetadata = false;
+
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateAudience = false,
+            ValidateIssuer = false,
+            IssuerSigningKey = signingKey
+        };
+
+        // Personalizar error
+        options.Events = new JwtBearerEvents
+        {
+            OnChallenge = context =>
+            {
+                // Personalizar el error 401 (Unauthorized)
+                context.Response.StatusCode = 401;
+                context.Response.ContentType = "application/json";
+                return context.Response.WriteAsync(
+                    "{ \"success\": false, \"message\": \"Token inválido, expirado o no existente\"}"
+                );
+            }
+        };
 });
 
 // Add services to the container.
