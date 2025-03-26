@@ -88,5 +88,19 @@ namespace Infrastructure.Repositories
             _context.Ratings.Remove(rating);
             return await _context.SaveChangesAsync() > 0;
         }
+
+        public async Task<IEnumerable<Rating>> GetByRatedUserAsync(int idRatedUser)
+        {
+            return await _context.Ratings
+                .Include(r => r.RaterUser)
+                    .ThenInclude(u => new { u!.Name, u.ProfilePic })
+                .Include(r => r.RaterUser)
+                    .ThenInclude(u => u!.ProfilePic)
+                        .ThenInclude(p => p!.Link)
+                .Include(r => r.RatedRole)
+                    .ThenInclude(rr => rr!.Name)
+                .Where(r => r.RatedUser != null && r.RatedUser.Id == idRatedUser)
+                .ToListAsync();
+        }
     }
 }
