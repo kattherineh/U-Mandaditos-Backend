@@ -35,8 +35,11 @@ public class FirebaseStorageService: IFirebaseStorageService
         var storage = StorageClient.Create(credentials);
         var stream = fileStream.OpenReadStream();
 
-        await storage.UploadObjectAsync(_bucketName, fileName, contentType, stream);
+        // Eliminar espacios del fileName
+        var parsedFileName = fileName.Replace(" ", "");
 
-        return $"https://storage.googleapis.com/{_bucketName}/{fileName}";
+        await storage.UploadObjectAsync(_bucketName, parsedFileName, contentType, stream);
+
+        return $"https://firebasestorage.googleapis.com/v0/b/{_bucketName}/o/{parsedFileName}?alt=media";
     }
 }

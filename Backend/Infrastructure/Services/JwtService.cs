@@ -23,20 +23,22 @@ namespace Infrastructure.Services
         {
             var claims = new[]
             {
-                new Claim(ClaimTypes.Email, user.Email), // Encapsula el email del usuario
+                new Claim(ClaimTypes.Email, user.Email),
                 new Claim(ClaimTypes.Name, user.Name),
                 new Claim("IdUser", user.Id.ToString()),
                 new Claim("DNI", user.Dni)
             };
 
             var key = _jwtSettings.SecretKey;
+            var expirationMinutes = _jwtSettings.ExpirationMinutes;
+
             var tokenHandler = new JwtSecurityTokenHandler();
             var byteKey = Encoding.UTF8.GetBytes(key);
 
             var tokenDes = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.UtcNow.AddMinutes(15),
+                Expires = DateTime.UtcNow.AddMinutes(expirationMinutes),
                 SigningCredentials = new SigningCredentials( new SymmetricSecurityKey(byteKey),
                                                             SecurityAlgorithms.HmacSha256Signature)
             };
