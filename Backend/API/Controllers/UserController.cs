@@ -47,4 +47,23 @@ public class UserController: ControllerBase
             return StatusCode(500, $"Error interno del servidor: {ex.Message}");
         }
     }
+
+    [Authorize]
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateAsync(int id, [FromForm] UserProfileRequestDTO userRequest)
+    {
+        if (userRequest.ProfilePic == null || userRequest.ProfilePic.Length == 0)
+            return BadRequest("No file uploaded.");
+
+        try 
+        {
+            var res = await _userService.UpdateAsync(id, userRequest);
+
+            return Ok(res);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+        }
+    }
 }

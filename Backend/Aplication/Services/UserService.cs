@@ -5,6 +5,7 @@ using Aplication.DTOs.Media;
 using Aplication.DTOs.Users;
 using Aplication.Interfaces;
 using Aplication.Interfaces.Helpers;
+using Aplication.Interfaces.Locations;
 using Aplication.Interfaces.Users;
 using Domain.Entities;
 
@@ -15,12 +16,14 @@ public class UserService: IUserService
     public readonly IUserRepository _userRepository;
     public readonly IFirebaseStorageService _firebaseService;
     public readonly ICareerRepository _careerRepository;
+    public readonly ILocationRepository _locationRepository;
 
-    public UserService(IUserRepository userRepository,  IFirebaseStorageService firebaseService, ICareerRepository careerRepository)
+    public UserService(IUserRepository userRepository,  IFirebaseStorageService firebaseService, ICareerRepository careerRepository, ILocationRepository locationRepository)
     {
         _userRepository = userRepository;
         _firebaseService = firebaseService;
         _careerRepository = careerRepository;
+        _locationRepository = locationRepository;
     }
     
     public async Task<ResponseDTO<UserResponseDTO>> CreateUserAsync(UserRequestDTO userRequest)
@@ -139,8 +142,112 @@ public class UserService: IUserService
                 Message = $"Ocurriï¿½ un error al obtener al usuario con id={id}"
             };
         }
+    }
 
+    public async Task<ResponseDTO<UpdatedResponseDTO>> UpdateAsync(int id, UserProfileRequestDTO user)
+    {
+        try 
+        {
+            var userToUpdate = await _userRepository.GetByIdAsync(id);
 
-        return null;
+            if (userToUpdate is null)
+                return new ResponseDTO<UpdatedResponseDTO>
+                {
+                    Success = false,
+                    Message = "Usuario no encontrado",
+                    Data = new UpdatedResponseDTO
+                    {
+                        Updated = false
+                    }
+                };
+
+            // Validar carrera
+            var career = await _careerRepository.GetByIdAsync(user.IdCareer);
+            if (career == null)
+            {
+                return new ResponseDTO<UpdatedResponseDTO>
+                {
+                    Success = false,
+                    Message = "Carrera no encontrada",
+                    Data = new UpdatedResponseDTO
+                    {
+                        Updated = false
+                    }
+                };
+            }
+
+            // Validar Last Location
+            var lastLocation = await _locationRepository.GetByIdAsync(user.IdLastLocation);
+            if (lastLocation == null)
+            {
+                return new ResponseDTO<UpdatedResponseDTO>
+                {
+                    Success = false,
+                    Message = "Última ubicación no encontrada",
+                    Data = new UpdatedResponseDTO
+                    {
+                        Updated = false
+                    }
+                };
+            }
+
+            // Foto de perfil
+            var fileName = $"{user.Name}-{user.Dni}";
+            var photo = await _firebaseService.UploadProfilePicture(user.ProfilePic, fileName, "image/jpeg");
+            var profilePic = new Media(fileName, photo);
+
+            userToUpdate.Name = user.Name;
+            userToUpdate.Dni = user.Dni;
+            userToUpdate.Password = user.Password;
+            userToUpdate.Email = user.Email;
+            userToUpdate.BirthDay = user.BirthDay;
+            userToUpdate.Rating = user.Score;
+            userToUpdate.ProfilePic = profilePic;
+            userToUpdate.LastLocation = lastLocation;
+            userToUpdate.Career = career;
+
+            var isUpdated = await _userRepository.UpdateAsync(userToUpdate);
+
+            if (isUpdated == false)
+            {
+                return new ResponseDTO<UpdatedResponseDTO>
+                {
+                    Success = false,
+                    Message = $"Ocurrió un error al actualizar al usuario con id={id}",
+                    Data = new UpdatedResponseDTO
+                    {
+                        Updated = false,
+                    }
+                };
+            }
+
+            return new ResponseDTO<UpdatedResponseDTO>
+            {
+                Success = true,
+                Message = $"El usuario con id={id} ha sido actualizado",
+                Data = new UpdatedResponseDTO
+                {
+                    Updated = true
+                }
+            };
+        }
+        catch(Exception e)
+        {
+            var errorMessage = e.InnerException?.Message ?? e.Message;
+
+            if (errorMessage.Contains("Cannot insert duplicate key") && errorMessage.Contains("unique index 'IX_Users_Dni'"))
+            {
+                errorMessage = "Error: Ya existe un usuario con este DNI";
+            }
+
+            return new ResponseDTO<UpdatedResponseDTO>
+            {
+                Success = false,
+                Message = errorMessage,
+                Data = new UpdatedResponseDTO { 
+                    Updated = false
+                }
+            };
+        }
     }
 }
