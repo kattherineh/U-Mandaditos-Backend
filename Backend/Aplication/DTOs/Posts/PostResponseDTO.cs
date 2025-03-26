@@ -1,10 +1,13 @@
 ﻿namespace Aplication.DTOs.Posts;
 
-public class PostReponseDTO
+public class PostResponseDTO
 {
     public int Id { get; set; }
     public string Description { get; set; } = string.Empty;
     public double SuggestedValue { get; set; }
     public string PosterUserName { get; set; } = string.Empty;
-    public DateTime CreatedAt { get; set; }
+    public string CreatedAt { get; set; }
+    
+    public string PickUpLocation { get; set; }
+    public string DeliveryLocation { get; set; }
 }
