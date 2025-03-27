@@ -1,0 +1,39 @@
+name: Docker Image CI
+
+on:
+#  push:
+#    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Log in to GitHub Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Build and tag Docker image
+      run: |
+        REPO_LOWER=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+        IMAGE_NAME=ghcr.io/${REPO_LOWER}/api:dev
+        echo "Building $IMAGE_NAME"
+        docker build --no-cache -t $IMAGE_NAME -f Backend/API/Dockerfile Backend
+
+    - name: Push Docker image to GitHub Container Registry
+      run: |
+        REPO_LOWER=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+        IMAGE_NAME=ghcr.io/${REPO_LOWER}/api:dev
+        docker push $IMAGE_NAME
