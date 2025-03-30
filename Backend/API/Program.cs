@@ -12,7 +12,7 @@ Env.Load();
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Agregar configuraciÛn desde variables de entorno y appsettings.json
+// Agregar configuraci√≥n desde variables de entorno y appsettings.json
 builder.Configuration
     .SetBasePath(Directory.GetCurrentDirectory())
     .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
@@ -46,7 +46,7 @@ else
 }
 Console.ResetColor();
 
-// Cargar configuracion de Jwt para AutenticaciÛn
+// Cargar configuracion de Jwt para Autenticaci√≥n
 
 // Configurar el binding de las variables de entorno para JwtSettings
 builder.Services.Configure<JwtSettings>(options =>
@@ -60,12 +60,12 @@ builder.Services.AddAuthorization();
 builder.Services.AddAuthentication("Bearer")
     .AddJwtBearer(options =>
     {
-        // AquÌ, usamos builder.Configuration para acceder a las configuraciones directamente.
+        // Aqu√≠, usamos builder.Configuration para acceder a las configuraciones directamente.
         var secretKey = builder.Configuration["JWT_SECRET_KEY"];
 
         if (string.IsNullOrEmpty(secretKey))
         {
-            throw new InvalidOperationException("La clave secreta JWT no est· configurada.");
+            throw new InvalidOperationException("La clave secreta JWT no est√° configurada.");
         }
 
         var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
@@ -89,7 +89,7 @@ builder.Services.AddAuthentication("Bearer")
                 context.Response.StatusCode = 401;
                 context.Response.ContentType = "application/json";
                 return context.Response.WriteAsync(
-                    "{ \"success\": false, \"message\": \"Token inv·lido, expirado o no existente\"}"
+                    "{ \"success\": false, \"message\": \"Token inv√°lido, expirado o no existente\"}"
                 );
             }
         };
