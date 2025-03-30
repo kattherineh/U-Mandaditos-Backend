@@ -30,26 +30,39 @@ namespace Infrastructure.Persistence
 
             modelBuilder.Entity<User>(entity =>
             {
-                entity
-                .HasOne(u => u.ProfilePic) //Tiene una Foto de perfil
-                .WithOne()
-                .HasForeignKey<User>(u => u.ProfilePicId)
-                .OnDelete(DeleteBehavior.SetNull);
+                entity.HasOne(u => u.ProfilePic) //Tiene una Foto de perfil
+                    .WithOne()
+                    .HasForeignKey<User>(u => u.ProfilePicId)
+                    .OnDelete(DeleteBehavior.SetNull);
 
                 entity.HasIndex(u => u.Dni).IsUnique();
+                entity.HasIndex(e => e.Email).IsUnique();
+                
+                entity.Property(n => n.Name)
+                    .IsRequired()
+                    .HasColumnType("VARCHAR(40)");
+                
+                entity.Property(e => e.Email)
+                    .IsRequired()
+                    .HasColumnType("VARCHAR(40)");
+                
+                entity.Property(d => d.BirthDay)
+                    .IsRequired()
+                    .HasColumnType("DATE");
+                
+                entity.Property(r => r.Rating)
+                    .HasColumnType("DECIMAL(2,1)");
+                
+                entity.HasOne(u => u.LastLocation) //Tiene una location
+                    .WithMany()
+                    .HasForeignKey(u => u.LastLocationId)
+                    .OnDelete(DeleteBehavior.SetNull);
+                
+                entity.HasOne(u => u.Career) //Tiene una carrera
+                    .WithMany()
+                    .HasForeignKey(u => u.CareerId)
+                    .OnDelete(DeleteBehavior.SetNull);
             });
-
-            modelBuilder.Entity<User>()
-                .HasOne(u => u.LastLocation) //Tiene una location
-                .WithMany()
-                .HasForeignKey(u => u.LastLocationId)
-                .OnDelete(DeleteBehavior.SetNull);
-
-            modelBuilder.Entity<User>()
-                .HasOne(u => u.Career) //Tiene una carrera
-                .WithMany()
-                .HasForeignKey(u => u.CareerId)
-                .OnDelete(DeleteBehavior.SetNull);
 
             modelBuilder.Entity<SessionLog>(entity =>
             {
@@ -92,17 +105,17 @@ namespace Infrastructure.Persistence
                 entity.HasOne(p => p.PosterUser)
                     .WithMany()
                     .HasForeignKey(p => p.IdPosterUser)
-                    .OnDelete(DeleteBehavior.SetNull);
+                    .OnDelete(DeleteBehavior.Restrict);
 
                 entity.HasOne(p => p.PickUpLocation)
                     .WithMany()
                     .HasForeignKey(p => p.IdPickUpLocation)
-                    .OnDelete(DeleteBehavior.NoAction);
+                    .OnDelete(DeleteBehavior.Restrict);
 
                 entity.HasOne(p => p.DeliveryLocation)
                     .WithMany()
                     .HasForeignKey(p => p.IdDeliveryLocation)
-                    .OnDelete(DeleteBehavior.NoAction);
+                    .OnDelete(DeleteBehavior.Restrict);
             });
 
             modelBuilder.Entity<UserLocationHistory>(entity =>
@@ -118,12 +131,12 @@ namespace Infrastructure.Persistence
                 entity.HasOne(ulh => ulh.User)
                     .WithMany()
                     .HasForeignKey(ulh => ulh.IdUser)
-                    .OnDelete(DeleteBehavior.Cascade);
+                    .OnDelete(DeleteBehavior.Restrict);
 
                 entity.HasOne(ulh => ulh.Location)
                     .WithMany()
                     .HasForeignKey(ulh => ulh.IdLocation)
-                    .OnDelete(DeleteBehavior.Cascade);
+                    .OnDelete(DeleteBehavior.Restrict);
             });
 
             modelBuilder.Entity<Offer>(entity =>
@@ -137,7 +150,7 @@ namespace Infrastructure.Persistence
                 entity.HasOne(o => o.UserCreator)
                     .WithMany()
                     .HasForeignKey(o => o.IdUserCreator)
-                    .OnDelete(DeleteBehavior.Cascade)
+                    .OnDelete(DeleteBehavior.Restrict)
                     .IsRequired();
 
                 entity.HasOne(o => o.Post)
@@ -177,7 +190,7 @@ namespace Infrastructure.Persistence
                 entity.HasOne(m => m.Offer)
                     .WithMany()
                     .HasForeignKey(m => m.IdOffer)
-                    .OnDelete(DeleteBehavior.Cascade);
+                    .OnDelete(DeleteBehavior.Restrict);
 
             });
 
@@ -188,19 +201,19 @@ namespace Infrastructure.Persistence
                 entity.HasOne(r => r.Mandadito)
                     .WithMany()
                     .HasForeignKey(r => r.IdMandadito)
-                    .OnDelete(DeleteBehavior.Cascade)
+                    .OnDelete(DeleteBehavior.Restrict)
                     .IsRequired();
 
                 entity.HasOne(r => r.RatedUser)  // Usuario calificado
                     .WithMany()
                     .HasForeignKey(r => r.IdRatedUser)
-                    .OnDelete(DeleteBehavior.NoAction)
+                    .OnDelete(DeleteBehavior.Restrict)
                     .IsRequired();
 
                 entity.HasOne(r => r.RaterUser)  // Usuario que califica
                     .WithMany()
                     .HasForeignKey(r => r.IdRater)
-                    .OnDelete(DeleteBehavior.NoAction)
+                    .OnDelete(DeleteBehavior.Restrict)
                     .IsRequired();
 
                 entity.HasOne(r => r.RatedRole)
@@ -223,13 +236,13 @@ namespace Infrastructure.Persistence
                 entity.HasOne(osh => osh.OrderStatus)
                     .WithMany()
                     .HasForeignKey(osh => osh.IdStatus)
-                    .OnDelete(DeleteBehavior.Cascade)
+                    .OnDelete(DeleteBehavior.Restrict)
                     .IsRequired();
 
                 entity.HasOne(osh => osh.Mandadito)
                     .WithMany()
                     .HasForeignKey(osh => osh.IdMandadito)
-                    .OnDelete(DeleteBehavior.Cascade)
+                    .OnDelete(DeleteBehavior.Restrict)
                     .IsRequired();
 
                 entity.Property(osh => osh.ChangeAt)
@@ -248,13 +261,13 @@ namespace Infrastructure.Persistence
                 entity.HasOne(m => m.User)
                     .WithMany()
                     .HasForeignKey(m => m.IdUser)
-                    .OnDelete(DeleteBehavior.NoAction)
+                    .OnDelete(DeleteBehavior.Restrict)
                     .IsRequired();
 
                 entity.HasOne(m => m.Mandadito)
                     .WithMany()
                     .HasForeignKey(m => m.IdMandadito)
-                    .OnDelete(DeleteBehavior.Cascade)
+                    .OnDelete(DeleteBehavior.Restrict)
                     .IsRequired();
 
                 entity.Property(m => m.Text)
