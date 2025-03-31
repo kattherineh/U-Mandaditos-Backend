@@ -23,6 +23,7 @@ namespace Infrastructure.Persistence
         public DbSet<Rating> Ratings { set; get; }
         public DbSet<OrderStatusHistory> OrderStatusHistories { set; get; }
         public DbSet<Message> Messages { set; get; }
+        public DbSet<Management> Managements { set; get; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -276,6 +277,30 @@ namespace Infrastructure.Persistence
                 entity.Property(m => m.CreatedAt)
                     .HasDefaultValueSql("GETDATE()")
                     .IsRequired();
+            });
+
+            modelBuilder.Entity<Management>(entity =>
+            {
+                entity.HasKey(m => m.Id);
+
+                entity.HasOne(m => m.User)
+                    .WithMany()
+                    .HasForeignKey(m => m.UserId)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+
+                entity.HasOne(m => m.ManagementRole)
+                    .WithMany()
+                    .HasForeignKey(m => m.ManegementRoleId)
+                    .OnDelete(DeleteBehavior.NoAction)
+                    .IsRequired();
+
+                entity.Property(m => m.Code)
+                    .IsRequired()
+                    .HasMaxLength(6);
+
+                entity.Property(m => m.Active)
+                    .HasDefaultValue(true);
             });
 
         }

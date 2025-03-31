@@ -66,4 +66,18 @@ public class UserController: ControllerBase
             return StatusCode(500, $"Error interno del servidor: {ex.Message}");
         }
     }
+
+    [HttpPatch("{id}/password")]
+    public async Task<IActionResult> ChangePasswordAsync(int id, [FromBody] UserNewPasswordRequestDTO user)
+    {
+        try
+        {
+            var res = await _userService.ChangePasswordAsync(id, user.Password);
+            return Ok(res);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+        }
+    }
 }

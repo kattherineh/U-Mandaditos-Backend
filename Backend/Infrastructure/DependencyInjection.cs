@@ -14,6 +14,7 @@ using Infraestructure.Repositories;
 using Infrastructure.Repositories;
 using Infrastructure.Services;
 using Microsoft.Extensions.DependencyInjection;
+using Application.Services;
 
 namespace Infrastructure;
 
@@ -55,6 +56,10 @@ public static class DependencyInjection
         
         services.AddScoped<IUserRepository, UserRepository>();
 
+        services.AddScoped<IManagementService, ManagementService>();
+        services.AddScoped<IManagementRepository, ManagementRepository>();
+
+        services.AddScoped<IEmailService, EmailService>();
         services.AddScoped<ISessionLogRepository, SessionLogRepository>();
 
         services.AddScoped<IAuthService, AuthService>();
