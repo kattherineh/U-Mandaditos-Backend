@@ -3,4 +3,7 @@
 public interface ICodeGeneratorService
 {
     string GenerateMandaditoCode(int lenght);
+
+    string GenerateVerifyEmailCode();
+
 }

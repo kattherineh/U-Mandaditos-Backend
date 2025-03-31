@@ -13,7 +13,7 @@ public class UserRepository : IUserRepository
     {
         _dbContext = dbContext;
     }
-    
+
     public async Task<IEnumerable<User>> GetAllAsync()
     {
         return await _dbContext.Users.ToListAsync();
@@ -29,7 +29,7 @@ public class UserRepository : IUserRepository
     }
 
     public async Task AddAsync(User user)
-    { 
+    {
         _dbContext.Users.Add(user);
         await _dbContext.SaveChangesAsync();
     }
@@ -46,5 +46,18 @@ public class UserRepository : IUserRepository
         if (user is null) return false;
         _dbContext.Users.Remove(user);
         return await _dbContext.SaveChangesAsync() > 0;
+    }
+
+    public async Task<bool> ChangePasswordAsync(int id, string password)
+    {
+        var user = await _dbContext.Users.FindAsync(id);
+        if (user is null) return false;
+        user.Password = password;
+        return await _dbContext.SaveChangesAsync() > 0;
+    }
+
+    public async Task<User?> GetByEmailAsync(string email)
+    {
+        return await _dbContext.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Email == email);
     }
 }

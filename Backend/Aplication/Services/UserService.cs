@@ -11,21 +11,21 @@ using Domain.Entities;
 
 namespace Aplication.Services;
 
-public class UserService: IUserService
+public class UserService : IUserService
 {
     public readonly IUserRepository _userRepository;
     public readonly IFirebaseStorageService _firebaseService;
     public readonly ICareerRepository _careerRepository;
     public readonly ILocationRepository _locationRepository;
 
-    public UserService(IUserRepository userRepository,  IFirebaseStorageService firebaseService, ICareerRepository careerRepository, ILocationRepository locationRepository)
+    public UserService(IUserRepository userRepository, IFirebaseStorageService firebaseService, ICareerRepository careerRepository, ILocationRepository locationRepository)
     {
         _userRepository = userRepository;
         _firebaseService = firebaseService;
         _careerRepository = careerRepository;
         _locationRepository = locationRepository;
     }
-    
+
     public async Task<ResponseDTO<UserResponseDTO>> CreateUserAsync(UserRequestDTO userRequest)
     {
         try
@@ -60,12 +60,12 @@ public class UserService: IUserService
                 Message = "Usuario registrado exitosamente",
                 Data = userR
             };
-        } 
-        catch(Exception e)
+        }
+        catch (Exception e)
         {
             var errorMessage = e.InnerException?.Message ?? e.Message;
 
-            if(errorMessage.Contains("Cannot insert duplicate key") && errorMessage.Contains("unique index 'IX_Users_Dni'"))
+            if (errorMessage.Contains("Cannot insert duplicate key") && errorMessage.Contains("unique index 'IX_Users_Dni'"))
             {
                 errorMessage = "Error: Un usuario con este DNI ha sido registrado anteriormente.";
             }
@@ -82,7 +82,7 @@ public class UserService: IUserService
                 Data = null
             };
         }
-        
+
     }
 
     public async Task<ResponseDTO<UserProfileResponseDTO>> GetByIdAsync(int id)
@@ -133,7 +133,7 @@ public class UserService: IUserService
                 Data = data
             };
         }
-        catch(Exception e)
+        catch (Exception e)
         {
             Console.WriteLine(e.Message);
             return new ResponseDTO<UserProfileResponseDTO>
@@ -146,7 +146,7 @@ public class UserService: IUserService
 
     public async Task<ResponseDTO<UpdatedResponseDTO>> UpdateAsync(int id, UserProfileRequestDTO user)
     {
-        try 
+        try
         {
             var userToUpdate = await _userRepository.GetByIdAsync(id);
 
@@ -183,7 +183,7 @@ public class UserService: IUserService
                 return new ResponseDTO<UpdatedResponseDTO>
                 {
                     Success = false,
-                    Message = "�ltima ubicaci�n no encontrada",
+                    Message = "�ltima ubicaci�n no encontrada",
                     Data = new UpdatedResponseDTO
                     {
                         Updated = false
@@ -213,7 +213,7 @@ public class UserService: IUserService
                 return new ResponseDTO<UpdatedResponseDTO>
                 {
                     Success = false,
-                    Message = $"Ocurri� un error al actualizar al usuario con id={id}",
+                    Message = $"Ocurri� un error al actualizar al usuario con id={id}",
                     Data = new UpdatedResponseDTO
                     {
                         Updated = false,
@@ -231,7 +231,7 @@ public class UserService: IUserService
                 }
             };
         }
-        catch(Exception e)
+        catch (Exception e)
         {
             var errorMessage = e.InnerException?.Message ?? e.Message;
 
@@ -244,10 +244,65 @@ public class UserService: IUserService
             {
                 Success = false,
                 Message = errorMessage,
-                Data = new UpdatedResponseDTO { 
+                Data = new UpdatedResponseDTO
+                {
                     Updated = false
                 }
             };
+        }
+    }
+
+    public async Task<ResponseDTO<bool>> ChangePasswordAsync(int id, string password)
+    {
+        try
+        {
+            var result = await _userRepository.ChangePasswordAsync(id, password);
+            return new ResponseDTO<bool>
+            {
+                Success = result,
+                Message = result ? "Contraseña cambiada exitosamente" : "Error al cambiar la contraseña",
+                Data = result
+            };
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+            return new ResponseDTO<bool>
+            {
+                Success = false,
+                Message = "Ocurrió un error al cambiar la contraseña",
+                Data = false
+            };
+        }
+    }
+
+    public async Task<UserResponseDTO?> GetByEmailAsync(string email)
+    {
+        try
+        {
+            var user = await _userRepository.GetByEmailAsync(email);
+
+            if (user is null)
+            {
+                return null; // No se encontró el usuario
+
+            }
+
+            var userResponse = new UserResponseDTO
+            {
+                Id = user.Id,
+                Name = user.Name,
+                Link = user.ProfilePic?.Link
+            };
+
+            return userResponse;
+
+
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Ocurrió un error al buscar el usuario con email={email}: {e.Message}");
+            return null; // Return null in case of an exception
         }
     }
 }

@@ -20,4 +20,17 @@ public class CodeGeneratorService : ICodeGeneratorService
 
         return code.ToString();
     }
+
+    public string GenerateVerifyEmailCode()
+    {
+        var code = new StringBuilder(6);
+
+        for (var i = 0; i < 6; i++)
+        {
+            var index = Random.Next(Chars.Length);
+            code.Append(Chars[index]);
+        }
+
+        return code.ToString();
+    }
 }
