@@ -1,4 +1,5 @@
-﻿using Aplication.Interfaces.Posts;
+﻿using Aplication.DTOs.Posts;
+using Aplication.Interfaces.Posts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,6 +15,20 @@ public class PostController : ControllerBase
     public PostController(IPostService postService)
     {
         _postService = postService;
+    }
+    
+    [HttpPost("create")]
+    public async Task<IActionResult> CreatePost([FromBody] PostRequestDTO postRequest)
+    {
+        try
+        {
+            var post = await _postService.CreateAsync(postRequest);
+            return Ok(post);
+        }
+        catch (Exception e)
+        {
+            return StatusCode(500, $"Error interno del servidor: {e.Message}");
+        }
     }
     
     [HttpGet("near")]
