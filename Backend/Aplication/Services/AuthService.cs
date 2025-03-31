@@ -3,21 +3,23 @@ using Aplication.DTOs.General;
 using Aplication.Interfaces.Auth;
 using Aplication.Interfaces.Helpers;
 using Aplication.Interfaces.SessionLogs;
-using Domain.Auth;
+using Aplication.Interfaces.Users;
 using Domain.Entities;
 namespace Aplication.Services
 {
     public class AuthService : IAuthService
     {
-        private readonly IAuthRepository _authRepository;
-        private readonly IJwtService _jwtService;
+        private readonly IUserRepository _userRepository;
         private readonly ISessionLogRepository _sessionLogRepository;
+        private readonly IJwtService _jwtService;
+        private readonly IPasswordHasherService _passwordHasherService;
 
-        public AuthService(IAuthRepository authRepository, IJwtService jwtService, ISessionLogRepository sessionLogRepository)
+        public AuthService(IUserRepository userRepository, ISessionLogRepository sessionLogRepository, IJwtService jwtService, IPasswordHasherService passwordHasherService)
         {
-            _authRepository = authRepository;
-            _jwtService = jwtService;
+            _userRepository = userRepository;
             _sessionLogRepository = sessionLogRepository;
+            _jwtService = jwtService;
+            _passwordHasherService = passwordHasherService;
         }
 
         public async Task<ResponseDTO<LoginResponseDTO>> Login(LoginRequestDTO login)
@@ -26,22 +28,31 @@ namespace Aplication.Services
             {
                 if (login.Email == null) throw new ArgumentNullException(nameof(login.Email));
                 if (login.Password == null) throw new ArgumentNullException(nameof(login.Password));
+                
+                var user = await _userRepository.GetByEmailAsync(login.Email);
 
-                var userInfo = new Login(login.Email, login.Password);
-                var loggedUser = await _authRepository.Login(userInfo);
-
-                if (loggedUser is null)
+                if (user is null)
                 {
                     return new ResponseDTO<LoginResponseDTO>
                     {
                         Success = false,
-                        Message = "Error: Usuario o contraseña incorrectos",
+                        Message = $"Error: El usuario con el correo {login.Email} no fue encontrado",
+                        Data = null
+                    };
+                }
+
+                if (!_passwordHasherService.VerifyPassword(user.Password, login.Password)) //Si no coincide la contraseña
+                {
+                    return new ResponseDTO<LoginResponseDTO>
+                    {
+                        Success = false,
+                        Message = "Error: La contraseña que has ingresado es incorrecta",
                         Data = null
                     };
                 }
 
                 // Generar token
-                var token = _jwtService.GenerateToken(loggedUser);
+                var token = _jwtService.GenerateToken(user);
 
                 // Registrar log de Inicio de Sesión
                 var sessionLog = new SessionLog
@@ -50,8 +61,8 @@ namespace Aplication.Services
                     DeviceInfo = login.DeviceInfo ?? throw new ArgumentNullException(nameof(login.DeviceInfo)),
                     StartedAt = DateTime.Now,
                     EndedAt = null,
-                    UserId = loggedUser.Id,
-                    User = loggedUser
+                    UserId = user.Id,
+                    User = user
                 };
 
                 await _sessionLogRepository.AddAsync(sessionLog);
@@ -62,8 +73,8 @@ namespace Aplication.Services
                     Message = "Inicio de sesión exitoso",
                     Data = new LoginResponseDTO
                     {
-                        Email = loggedUser.Email,
-                        FullName = loggedUser.Name,
+                        Email = user.Email,
+                        FullName = user.Name,
                         Token = token.TokenR,
                         Expiration = token.Expires,
                     }

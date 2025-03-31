@@ -72,7 +72,7 @@ public class UserController: ControllerBase
     {
         try
         {
-            var res = await _userService.ChangePasswordAsync(id, user.Email);
+            var res = await _userService.ChangePasswordAsync(id, user.Password);
             return Ok(res);
         }
         catch (Exception ex)

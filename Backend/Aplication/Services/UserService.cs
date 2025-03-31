@@ -13,19 +13,24 @@ namespace Aplication.Services;
 
 public class UserService : IUserService
 {
-    public readonly IUserRepository _userRepository;
-    public readonly IFirebaseStorageService _firebaseService;
-    public readonly ICareerRepository _careerRepository;
-    public readonly ILocationRepository _locationRepository;
+    private readonly IUserRepository _userRepository;
+    private readonly ICareerRepository _careerRepository;
+    private readonly ILocationRepository _locationRepository;
+    private readonly IFirebaseStorageService _firebaseService;
+    private readonly IPasswordHasherService _passwordHasherService;
 
-    public UserService(IUserRepository userRepository, IFirebaseStorageService firebaseService, ICareerRepository careerRepository, ILocationRepository locationRepository)
+    public UserService(IUserRepository userRepository,  
+        IFirebaseStorageService firebaseService, 
+        ICareerRepository careerRepository, 
+        ILocationRepository locationRepository, 
+        IPasswordHasherService passwordHasherService)
     {
         _userRepository = userRepository;
         _firebaseService = firebaseService;
         _careerRepository = careerRepository;
         _locationRepository = locationRepository;
+        _passwordHasherService = passwordHasherService;
     }
-
     public async Task<ResponseDTO<UserResponseDTO>> CreateUserAsync(UserRequestDTO userRequest)
     {
         try
@@ -36,7 +41,7 @@ public class UserService : IUserService
 
             user.Name = userRequest.name;
             user.Email = userRequest.email;
-            user.Password = userRequest.password;
+            user.Password = _passwordHasherService.HashPassword(userRequest.password);
             user.Dni = userRequest.dni;
 
             // Carrera
@@ -72,7 +77,7 @@ public class UserService : IUserService
 
             if (errorMessage.Contains("The INSERT statement conflicted") && errorMessage.Contains("Careers"))
             {
-                errorMessage = "Error: Se est� haciendo referencia a una carrera inexistente.";
+                errorMessage = "Error: Se está haciendo referencia a una carrera inexistente.";
             }
 
             return new ResponseDTO<UserResponseDTO>
@@ -129,7 +134,7 @@ public class UserService : IUserService
             return new ResponseDTO<UserProfileResponseDTO>
             {
                 Success = true,
-                Message = $"La informaci�n del usuario con id={id} fue obtenida satisfactoriamente",
+                Message = $"La información del usuario con id={id} fue obtenida satisfactoriamente",
                 Data = data
             };
         }
@@ -139,7 +144,7 @@ public class UserService : IUserService
             return new ResponseDTO<UserProfileResponseDTO>
             {
                 Success = false,
-                Message = $"Ocurri� un error al obtener al usuario con id={id}"
+                Message = $"Ocurrió un error al obtener al usuario con id={id}"
             };
         }
     }
@@ -183,7 +188,7 @@ public class UserService : IUserService
                 return new ResponseDTO<UpdatedResponseDTO>
                 {
                     Success = false,
-                    Message = "�ltima ubicaci�n no encontrada",
+                    Message = "Última ubicación no encontrada",
                     Data = new UpdatedResponseDTO
                     {
                         Updated = false
@@ -213,7 +218,7 @@ public class UserService : IUserService
                 return new ResponseDTO<UpdatedResponseDTO>
                 {
                     Success = false,
-                    Message = $"Ocurri� un error al actualizar al usuario con id={id}",
+                    Message = $"Ocurrió un error al actualizar al usuario con id={id}",
                     Data = new UpdatedResponseDTO
                     {
                         Updated = false,
