@@ -1,5 +1,6 @@
 ﻿using Aplication.DTOs.General;
 using Aplication.DTOs.Posts;
+using Aplication.Interfaces.Auth;
 using Aplication.Interfaces.Locations;
 using Aplication.Interfaces.Posts;
 using Aplication.Interfaces.Users;
@@ -12,17 +13,20 @@ public class PostService : IPostService
     private readonly IPostRepository _postRepository;
     private readonly IUserRepository _userRepository;
     private readonly ILocationRepository _locationRepository;
+    private readonly IAuthenticatedUserService _authenticatedUserService;
 
-    public PostService(IPostRepository postRepository, IUserRepository userRepository, ILocationRepository locationRepository)
+    public PostService(IPostRepository postRepository, IUserRepository userRepository, ILocationRepository locationRepository, IAuthenticatedUserService authenticatedUserService)
     {
         _postRepository = postRepository;
         _userRepository = userRepository;
         _locationRepository = locationRepository;
+        _authenticatedUserService = authenticatedUserService;
     }
-
+    
     public async Task<ResponseDTO<PostResponseDTO>> CreateAsync(PostRequestDTO dto)
     {
-        var user = await _userRepository.GetByIdAsync(dto.IdPosterUser);
+        var userId = _authenticatedUserService.GetAuthenticatedUserId(); //Obtiene el id del usuario autenticado
+        var user = await _userRepository.GetByIdAsync(userId);
         if (user == null)
         {
             return new ResponseDTO<PostResponseDTO>
@@ -62,8 +66,8 @@ public class PostService : IPostService
             SugestedValue = dto.SuggestedValue,
             IdPickUpLocation = dto.IdPickUpLocation,
             IdDeliveryLocation = dto.IdDeliveryLocation,
-            IdPosterUser = dto.IdPosterUser,
-            CreatedAt = DateTime.Parse(dto.CreatedAt),
+            IdPosterUser = userId,
+            CreatedAt = DateTime.Now,
             Completed = false //Por defecto el post no esta completado
         };
 
