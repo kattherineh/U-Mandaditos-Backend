@@ -1,6 +1,8 @@
+using Domain.Common;
+
 namespace Domain.Entities;
 
-public class UserLocationHistory
+public class UserLocationHistory : Entity
 {
     public User User  { get; set; }
     public int IdUser { get; set; }

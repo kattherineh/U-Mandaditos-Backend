@@ -21,6 +21,7 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services)
     {
+        //Inyeccion de dependencia de Entidades
         services.AddScoped<IOrderStatusRepository, OrderStatusRepository>();
         services.AddScoped<IOrderStatusService, OrderStatusService>();
 
@@ -43,10 +44,6 @@ public static class DependencyInjection
         
         services.AddScoped<IPostRepository, PostRepository>();
         services.AddScoped<IPostService, PostService>();
-        
-        services.AddScoped<ICodeGeneratorService, CodeGeneratorService>();
-
-        services.AddScoped<IFirebaseStorageService, FirebaseStorageService>();
 
         services.AddScoped<IOrderStatusHistoryRepository, OrderStatusHistoryRepository>();
 
@@ -55,16 +52,18 @@ public static class DependencyInjection
         services.AddScoped<IRatingRepository, RatingRepository>();
         
         services.AddScoped<IUserService, UserService>();
+        
         services.AddScoped<IUserRepository, UserRepository>();
-        
-        
-
-        services.AddScoped<IAuthRepository, AuthRepository>();
-        services.AddScoped<IAuthService, AuthService>();
-
-        services.AddScoped<IJwtService, JwtService>();
 
         services.AddScoped<ISessionLogRepository, SessionLogRepository>();
+
+        services.AddScoped<IAuthService, AuthService>();
+        
+        //Inyeccion de dependencia de Infraestructura
+        services.AddScoped<IJwtService, JwtService>();
+        services.AddScoped<ICodeGeneratorService, CodeGeneratorService>();
+        services.AddScoped<IFirebaseStorageService, FirebaseStorageService>();
+        services.AddScoped<IPasswordHasherService, PasswordHasherService>();
 
         return services;
     }
