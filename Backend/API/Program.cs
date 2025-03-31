@@ -20,6 +20,16 @@ builder.Configuration
 
 var dbConfig = new DatabaseConfig();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend",
+        policy => policy
+            .WithOrigins("http://localhost:3000") // Origen de tu frontend
+            .AllowAnyMethod() // Permite todos los métodos (GET, POST, etc.)
+            .AllowAnyHeader() // Permite cualquier cabecera
+            .AllowCredentials()); // Opcional: Si usas cookies o autenticación
+});
+
 // Introduction message to show in console
 string? version = builder.Configuration[key: "version"];
 if (version != null)
@@ -114,7 +124,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
+app.UseCors("AllowFrontend");
 app.UseAuthentication();
 app.UseAuthorization();
 

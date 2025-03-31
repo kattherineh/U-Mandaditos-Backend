@@ -30,6 +30,7 @@ namespace Aplication.Services
                 if (login.Password == null) throw new ArgumentNullException(nameof(login.Password));
                 
                 var user = await _userRepository.GetByEmailAsync(login.Email);
+                var inputHash = _passwordHasherService.HashPassword(login.Password);
 
                 if (user is null)
                 {
@@ -41,7 +42,11 @@ namespace Aplication.Services
                     };
                 }
 
-                if (!_passwordHasherService.VerifyPassword(user.Password, login.Password)) //Si no coincide la contraseña
+                Console.WriteLine($"Contraseña en BD: {user.Password}");
+                Console.WriteLine($"Contraseña ingresada: {login.Password}");
+                Console.WriteLine($"¿Coinciden?: {user.Password == inputHash}");
+                
+                if (user.Password != inputHash)
                 {
                     return new ResponseDTO<LoginResponseDTO>
                     {
@@ -50,7 +55,7 @@ namespace Aplication.Services
                         Data = null
                     };
                 }
-
+                
                 // Generar token
                 var token = _jwtService.GenerateToken(user);
 
@@ -80,14 +85,19 @@ namespace Aplication.Services
                     }
                 };
             }
-            catch
+            catch (Exception ex) // Capturamos la excepción
             {
+                Console.WriteLine($"Error en Login: {ex.Message}");
+                Console.WriteLine($"StackTrace: {ex.StackTrace}");
+                
                 return new ResponseDTO<LoginResponseDTO>
                 {
                     Success = false,
-                    Message = "Inicio de sesión fallido"
+                    Message = $"Inicio de sesión fallido: {ex.Message}", // Mensaje detallado solo en desarrollo
+                    Data = null
                 };
             }
         }
+
     }
 }

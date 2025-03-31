@@ -52,7 +52,7 @@ namespace Infrastructure.Persistence
                     .HasColumnType("DATE");
                 
                 entity.Property(r => r.Rating)
-                    .HasColumnType("DECIMAL(2,1)");
+                    .HasColumnType("INT");
                 
                 entity.HasOne(u => u.LastLocation) //Tiene una location
                     .WithMany()
