@@ -13,6 +13,7 @@ using Application.Interfaces;
 using Infraestructure.Repositories;
 using Infrastructure.Repositories;
 using Infrastructure.Services;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Application.Services;
 
@@ -65,11 +66,13 @@ public static class DependencyInjection
         services.AddScoped<IAuthService, AuthService>();
         
         //Inyeccion de dependencia de Infraestructura
+        services.AddHttpContextAccessor();
         services.AddScoped<IJwtService, JwtService>();
         services.AddScoped<ICodeGeneratorService, CodeGeneratorService>();
         services.AddScoped<IFirebaseStorageService, FirebaseStorageService>();
         services.AddScoped<IPasswordHasherService, PasswordHasherService>();
-
+        services.AddScoped<IAuthenticatedUserService, AuthenticatedUserService>();
+        
         return services;
     }
 }
