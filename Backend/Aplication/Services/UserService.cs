@@ -4,6 +4,7 @@ using Aplication.DTOs.Locations;
 using Aplication.DTOs.Media;
 using Aplication.DTOs.Users;
 using Aplication.Interfaces;
+using Aplication.Interfaces.Auth;
 using Aplication.Interfaces.Helpers;
 using Aplication.Interfaces.Locations;
 using Aplication.Interfaces.Users;
@@ -18,18 +19,21 @@ public class UserService : IUserService
     private readonly ILocationRepository _locationRepository;
     private readonly IFirebaseStorageService _firebaseService;
     private readonly IPasswordHasherService _passwordHasherService;
+    private readonly IAuthenticatedUserService _authenticatedUserService;
 
     public UserService(IUserRepository userRepository,  
         IFirebaseStorageService firebaseService, 
         ICareerRepository careerRepository, 
         ILocationRepository locationRepository, 
-        IPasswordHasherService passwordHasherService)
+        IPasswordHasherService passwordHasherService,
+        IAuthenticatedUserService authenticatedUserService)
     {
         _userRepository = userRepository;
         _firebaseService = firebaseService;
         _careerRepository = careerRepository;
         _locationRepository = locationRepository;
         _passwordHasherService = passwordHasherService;
+        _authenticatedUserService = authenticatedUserService;
     }
     public async Task<ResponseDTO<UserResponseDTO>> CreateUserAsync(UserRequestDTO userRequest)
     {
@@ -145,6 +149,66 @@ public class UserService : IUserService
             {
                 Success = false,
                 Message = $"Ocurrió un error al obtener al usuario con id={id}"
+            };
+        }
+    }
+    
+    public async Task<ResponseDTO<UserProfileResponseDTO>> GetUser()
+    {
+        try
+        {
+            var userId = _authenticatedUserService.GetAuthenticatedUserId();
+            var user = await _userRepository.GetByIdAsync(userId);
+
+            if (user is null)
+            {
+                return new ResponseDTO<UserProfileResponseDTO>
+                {
+                    Success = false,
+                    Message = $"Usuario no encontrado"
+                };
+            }
+
+            var data = new UserProfileResponseDTO
+            {
+                Name = user.Name,
+                Dni = user.Dni,
+                Email = user.Email,
+                BirthDay = user.BirthDay,
+                Score = user.Rating,
+                ProfilePic = new MediaResponseDTO
+                {
+                    Id = user.ProfilePic.Id,
+                    Name = user.ProfilePic.Name,
+                    Link = user.ProfilePic.Link
+                },
+                LastLocation = user.LastLocation != null ? new LastLocationUserDTO
+                {
+                    Description = user.LastLocation.Description,
+                    Name = user.LastLocation.Name,
+                    Id = user.LastLocation.Id
+                } : null,
+                Career = new CareerResponseDTO
+                {
+                    Id = user.Career.Id,
+                    Name = user.Career.Name
+                }
+            };
+
+            return new ResponseDTO<UserProfileResponseDTO>
+            {
+                Success = true,
+                Message = $"La información del usuario fue obtenida satisfactoriamente",
+                Data = data
+            };
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+            return new ResponseDTO<UserProfileResponseDTO>
+            {
+                Success = false,
+                Message = $"Ocurrió un error al obtener al usuario"
             };
         }
     }

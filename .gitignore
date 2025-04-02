@@ -13,3 +13,4 @@ Backend/*/Migrations
 Backend/.idea/
 Backend/.idea/*
 Backend/Infrastructure/umandaditos_firebase.json
+Backend/obj

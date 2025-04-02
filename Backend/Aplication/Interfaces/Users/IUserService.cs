@@ -12,4 +12,5 @@ public interface IUserService
     Task<ResponseDTO<UserProfileResponseDTO>> GetByIdAsync(int id);
     Task<ResponseDTO<UpdatedResponseDTO>> UpdateAsync(int id, UserProfileRequestDTO user);
     Task<ResponseDTO<bool>> ChangePasswordAsync(int id, string password);
+    Task<ResponseDTO<UserProfileResponseDTO>> GetUser();
 }

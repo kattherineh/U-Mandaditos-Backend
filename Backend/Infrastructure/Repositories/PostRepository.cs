@@ -97,16 +97,41 @@ public class PostRepository: IPostRepository
     {
         return await _context.Posts
             .Include(p => p.PosterUser)
-            .ThenInclude(u => new { u!.Name, u.LastLocation, u.Rating })
-            .Include(p => p.PosterUser)
-            .ThenInclude(u => u!.ProfilePic)
-            .ThenInclude(pp => new { pp!.Link })
+            .Include(p => p.PosterUser!.ProfilePic) // Carga la relación ProfilePic
             .Include(p => p.PickUpLocation)
-            .ThenInclude(loc => new { loc!.Latitude, loc.Longitude, loc.Name })
             .Include(p => p.DeliveryLocation)
-            .ThenInclude(loc => new { loc!.Latitude, loc.Longitude, loc.Name })
             .Where(p => p.IdPosterUser == idPosterUser)
             .OrderByDescending(p => p.CreatedAt)
+            .Select(p => new Post 
+            {
+                Id = p.Id,
+            
+                PosterUser = p.PosterUser != null ? new User
+                {
+                    Name = p.PosterUser.Name,
+                    LastLocation = p.PosterUser.LastLocation,
+                    Rating = p.PosterUser.Rating,
+                    ProfilePic = p.PosterUser.ProfilePic 
+                } : null,
+            
+                PickUpLocation = p.PickUpLocation != null ? new Location
+                {
+                    Latitude = p.PickUpLocation.Latitude,
+                    Longitude = p.PickUpLocation.Longitude,
+                    Name = p.PickUpLocation.Name
+                } : null,
+            
+                DeliveryLocation = p.DeliveryLocation != null ? new Location
+                {
+                    Latitude = p.DeliveryLocation.Latitude,
+                    Longitude = p.DeliveryLocation.Longitude,
+                    Name = p.DeliveryLocation.Name
+                } : null,
+            
+                // Resto de propiedades
+                CreatedAt = p.CreatedAt,
+                // ...
+            })
             .ToListAsync();
     }
 
