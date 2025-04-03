@@ -4,10 +4,10 @@ public class PostResponseDTO
 {
     public int Id { get; set; }
     
-    public string Title { get; set; } = string.Empty;
-    public string Description { get; set; } = string.Empty;
+    public string Title { get; set; } 
+    public string Description { get; set; } 
     public double SuggestedValue { get; set; }
-    public string PosterUserName { get; set; } = string.Empty;
+    public string PosterUserName { get; set; } 
     public string CreatedAt { get; set; }
     
     public string PickUpLocation { get; set; }

@@ -104,21 +104,19 @@ public class PostService : IPostService
         });
     }
     
-    public async Task<IEnumerable<PostResponseDTO>> GetPostsNearLocationAsync(int idLocation)
+    public async Task<IEnumerable<PostResponseDTO>> GetPostByLocation(int currentLocationId)
     {
-        var posts = await _postRepository.GetPostsNearLocationAsync(idLocation, 70);
-
-        var postDtos = posts.Select(p => new PostResponseDTO
+        var posts = await _postRepository.GetPostsByLocationIdAsync(currentLocationId);
+        var allPosts = await _postRepository.GetAllAsync();
+        Console.WriteLine($"Total posts: {posts.Count()}");
+        return posts.Select(post => new PostResponseDTO
         {
-            Id = p.Id,
-            Description = p.Description,
-            PickUpLocation = p.PickUpLocation?.Name ?? "Ubicación no disponible",
-            DeliveryLocation = p.DeliveryLocation?.Name ?? "Ubicación no disponible",
-            CreatedAt = p.CreatedAt.ToString("yyyy-MM-dd HH:mm"),
-            PosterUserName = p.PosterUser?.Name ?? "Usuario desconocido"
+            Id = post.Id,
+            Description = post.Description,
+            SuggestedValue = post.SugestedValue,
+            PosterUserName = post.PosterUser?.Name ?? string.Empty, 
+            CreatedAt = post.CreatedAt.ToString("yyyy-MM-dd HH:mm")
         }).ToList();
-
-        return postDtos;
     }
 
     public async Task<IEnumerable<PostResponseDTO>> GetPostsByPosterUserIdAsync(int idPosterUser)
@@ -163,5 +161,25 @@ public class PostService : IPostService
             PickUpLocation = post.PickUpLocation?.Name ?? "Ubicación no disponible",
             SuggestedValue = post.SugestedValue
         };
+    }
+
+    public async Task<IEnumerable<PostResponseDTO>> GetActivePosts()
+    {
+        var userId = _authenticatedUserService.GetAuthenticatedUserId(); 
+        var posts = await _postRepository.GetPostsActive(userId);
+
+        var postDtos = posts.Select(p => new PostResponseDTO
+        {
+            Id = p.Id,
+            Title = p.Title,
+            Description = p.Description,
+            SuggestedValue = p.SugestedValue,
+            PosterUserName = p.PosterUser?.Name ?? "Usuario desconocido",
+            CreatedAt = p.CreatedAt.ToString("hh:mm tt"),
+            PickUpLocation = p.PickUpLocation?.Name ?? "Ubicación no disponible",
+            DeliveryLocation = p.DeliveryLocation?.Name ?? "Ubicación no disponible"
+        }).ToList();
+
+        return postDtos;
     }
 }
