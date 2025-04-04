@@ -18,21 +18,21 @@ namespace Infrastructure.Repositories
         {
             return await _context.Mandaditos
                 .Include(m => m.Post)
-                    .ThenInclude(p => p!.PosterUser)
-                        .ThenInclude(u => u.LastLocation)
+                .ThenInclude(p => p!.PosterUser)
+                .ThenInclude(u => u.LastLocation)
                 .Include(m => m.Post)
-                    .ThenInclude(p => p!.PosterUser)
-                        .ThenInclude(u => u.ProfilePic)
+                .ThenInclude(p => p!.PosterUser)
+                .ThenInclude(u => u.ProfilePic)
                 .Include(m => m.Post)
-                    .ThenInclude(p => p!.PickUpLocation)
+                .ThenInclude(p => p!.PickUpLocation)
                 .Include(m => m.Post)
-                    .ThenInclude(p => p!.DeliveryLocation)
+                .ThenInclude(p => p!.DeliveryLocation)
                 .Include(m => m.Offer)
-                    .ThenInclude(o => o!.UserCreator)
-                        .ThenInclude(u => u!.LastLocation)
-                .Include(m=> m.Offer)
-                    .ThenInclude(o => o!.UserCreator)
-                        .ThenInclude(u => u!.ProfilePic)
+                .ThenInclude(o => o!.UserCreator)
+                .ThenInclude(u => u!.LastLocation)
+                .Include(m => m.Offer)
+                .ThenInclude(o => o!.UserCreator)
+                .ThenInclude(u => u!.ProfilePic)
                 .ToListAsync();
         }
 
@@ -52,9 +52,11 @@ namespace Infrastructure.Repositories
                 .Include(m => m.Offer)
                     .ThenInclude(o => o!.UserCreator)
                         .ThenInclude(u => u!.LastLocation)
-                .Include(m=> m.Offer)
+                .Include(m => m.Offer)
                     .ThenInclude(o => o!.UserCreator)
                         .ThenInclude(u => u!.ProfilePic)
+                .Include(m => m.Ratings)
+                    .ThenInclude(r => r.RatedRole) 
                 .FirstOrDefaultAsync(p => p.Id == id);
         }
 
