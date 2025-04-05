@@ -106,16 +106,16 @@ VALUES ('Poster', 1),
        ('Runner', 1);
 
 INSERT INTO [Users] (Name, DNI, Email, Password, BirthDay, Rating, ProfilePicId, LastLocationId, CareerId)
-VALUES ('Juan Perez', '12345678', 'juan.perez@example.com', 'password123', '1990-05-15', 4, 1, 1, 5),
-       ('Maria Gomez', '87654321', 'maria.gomez@example.com', 'securepass', '1985-08-22', 5, 2, 2, 10),
-       ('Carlos Ruiz', '23456789', 'carlos.ruiz@example.com', 'mypass123', '1992-11-30', 3, 3, 3, 15),
-       ('Ana Lopez', '34567890', 'ana.lopez@example.com', 'anapass', '1988-03-10', 4, 4, 4, 20),
-       ('Luis Torres', '45678901', 'luis.torres@example.com', 'luispass', '1995-07-25', 2, 5, 5, 25),
-       ('Sofia Ramirez', '56789012', 'sofia.ramirez@example.com', 'sofiapass', '1991-09-12', 5, 6, 6, 30),
-       ('Pedro Sanchez', '67890123', 'pedro.sanchez@example.com', 'pedropass', '1987-12-05', 3, 7, 7, 3),
-       ('Laura Diaz', '78901234', 'laura.diaz@example.com', 'laurapass', '1993-04-18', 4, 8, 8, 8),
-       ('Miguel Castro', '89012345', 'miguel.castro@example.com', 'miguelpass', '1989-06-20', 5, 9, 9, 12),
-       ('Elena Morales', '90123456', 'elena.morales@example.com', 'elenapass', '1994-02-14', 2, 10, 10, 18);
+VALUES ('Juan Perez', '12345678', 'juan.perez@example.com', 'IoWHf77EuxrWRmptNZbzo2lkbbA6AtT3SiYWpQ1Fegw=', '1990-05-15', 4, 1, 1, 5),
+       ('Maria Gomez', '87654321', 'maria.gomez@example.com', 'IoWHf77EuxrWRmptNZbzo2lkbbA6AtT3SiYWpQ1Fegw=', '1985-08-22', 5, 2, 2, 10),
+       ('Carlos Ruiz', '23456789', 'carlos.ruiz@example.com', 'IoWHf77EuxrWRmptNZbzo2lkbbA6AtT3SiYWpQ1Fegw=', '1992-11-30', 3, 3, 3, 15),
+       ('Ana Lopez', '34567890', 'ana.lopez@example.com', 'IoWHf77EuxrWRmptNZbzo2lkbbA6AtT3SiYWpQ1Fegw=', '1988-03-10', 4, 4, 4, 20),
+       ('Luis Torres', '45678901', 'luis.torres@example.com', 'IoWHf77EuxrWRmptNZbzo2lkbbA6AtT3SiYWpQ1Fegw=', '1995-07-25', 2, 5, 5, 25),
+       ('Sofia Ramirez', '56789012', 'sofia.ramirez@example.com', 'IoWHf77EuxrWRmptNZbzo2lkbbA6AtT3SiYWpQ1Fegw=', '1991-09-12', 5, 6, 6, 30),
+       ('Pedro Sanchez', '67890123', 'pedro.sanchez@example.com', 'IoWHf77EuxrWRmptNZbzo2lkbbA6AtT3SiYWpQ1Fegw=', '1987-12-05', 3, 7, 7, 3),
+       ('Laura Diaz', '78901234', 'laura.diaz@example.com', 'IoWHf77EuxrWRmptNZbzo2lkbbA6AtT3SiYWpQ1Fegw=', '1993-04-18', 4, 8, 8, 8),
+       ('Miguel Castro', '89012345', 'miguel.castro@example.com', 'IoWHf77EuxrWRmptNZbzo2lkbbA6AtT3SiYWpQ1Fegw=', '1989-06-20', 5, 9, 9, 12),
+       ('Elena Morales', '90123456', 'elena.morales@example.com', 'IoWHf77EuxrWRmptNZbzo2lkbbA6AtT3SiYWpQ1Fegw=', '1994-02-14', 2, 10, 10, 18);
 
 INSERT INTO [Posts] (Title, Description, SugestedValue, IdPosterUser, IdPickupLocation, IdDeliveryLocation, CreatedAt, Completed)
 VALUES 

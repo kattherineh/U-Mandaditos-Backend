@@ -4,6 +4,7 @@ using Aplication.DTOs.Media;
 using Aplication.DTOs.Offers;
 using Aplication.DTOs.Posts;
 using Aplication.DTOs.Users;
+using Aplication.Interfaces.Auth;
 using Aplication.Interfaces.Helpers;
 using Aplication.Interfaces.Mandaditos;
 using Domain.Entities;
@@ -14,11 +15,13 @@ public class MandaditoService : IMandaditoService
 {
     private readonly IMandaditoRepository _mandaditoRepository;
     private readonly ICodeGeneratorService _codeGeneratorService;
+    private readonly IAuthenticatedUserService _authenticatedUserService;
 
-    public MandaditoService(IMandaditoRepository mandaditoRepository, ICodeGeneratorService codeGeneratorService)
+    public MandaditoService(IMandaditoRepository mandaditoRepository, ICodeGeneratorService codeGeneratorService, IAuthenticatedUserService authenticatedUserService)
     {
         _mandaditoRepository = mandaditoRepository;
         _codeGeneratorService = codeGeneratorService;
+        _authenticatedUserService = authenticatedUserService;
     }
 
     public async Task<MandaditoResponseDTO?> GetByIdAsync(int id)
@@ -111,5 +114,17 @@ public class MandaditoService : IMandaditoService
             OfferId = mandadito.IdOffer,
             PostId = mandadito.IdPost
         };
+    }
+
+    public async Task<Dictionary<string, List<Mandadito>>> Execute()
+    {
+        var userId = _authenticatedUserService.GetAuthenticatedUserId();
+        return await _mandaditoRepository.GetHistoryMandaditos(userId);
+    }
+    
+    public async Task<Dictionary<string, List<Mandadito>>> ExecuteGet()
+    {
+        var userId = _authenticatedUserService.GetAuthenticatedUserId();
+        return await _mandaditoRepository.GetHistoryMandaditosLikeRunner(userId);
     }
 }
