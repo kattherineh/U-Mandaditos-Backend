@@ -154,4 +154,16 @@ public class MandaditoService : IMandaditoService
             PostId = mandadito.IdPost
         };
     }
+
+    public async Task<Dictionary<string, List<Mandadito>>> Execute()
+    {
+        var userId = _authenticatedUserService.GetAuthenticatedUserId();
+        return await _mandaditoRepository.GetHistoryMandaditos(userId);
+    }
+    
+    public async Task<Dictionary<string, List<Mandadito>>> ExecuteGet()
+    {
+        var userId = _authenticatedUserService.GetAuthenticatedUserId();
+        return await _mandaditoRepository.GetHistoryMandaditosLikeRunner(userId);
+    }
 }
