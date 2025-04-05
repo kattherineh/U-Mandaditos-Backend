@@ -48,5 +48,4 @@ public class MandaditoController : ControllerBase
             return StatusCode(500, $"Error interno del servidor: {ex.Message}");
         }
     }
-
 }

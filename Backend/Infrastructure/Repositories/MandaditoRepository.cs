@@ -1,5 +1,7 @@
-﻿using Aplication.Interfaces.Mandaditos;
+﻿using Aplication.DTOs.Mandaditos;
+using Aplication.Interfaces.Mandaditos;
 using Domain.Entities;
+using FirebaseAdmin.Auth.Hash;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -30,7 +32,7 @@ namespace Infrastructure.Repositories
                 .Include(m => m.Offer)
                     .ThenInclude(o => o!.UserCreator)
                         .ThenInclude(u => u!.LastLocation)
-                .Include(m=> m.Offer)
+                .Include(m => m.Offer)
                     .ThenInclude(o => o!.UserCreator)
                         .ThenInclude(u => u!.ProfilePic)
                 .ToListAsync();
@@ -38,7 +40,7 @@ namespace Infrastructure.Repositories
 
         public async Task<Mandadito?> GetByIdAsync(int id)
         {
-            return await _context.Mandaditos
+            var md = await _context.Mandaditos
                 .Include(m => m.Post)
                     .ThenInclude(p => p!.PosterUser)
                         .ThenInclude(u => u.LastLocation)
@@ -52,11 +54,28 @@ namespace Infrastructure.Repositories
                 .Include(m => m.Offer)
                     .ThenInclude(o => o!.UserCreator)
                         .ThenInclude(u => u!.LastLocation)
-                .Include(m=> m.Offer)
+                .Include(m => m.Offer)
                     .ThenInclude(o => o!.UserCreator)
                         .ThenInclude(u => u!.ProfilePic)
-                .FirstOrDefaultAsync(p => p.Id == id);
+                .Include(m => m.Offer)
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            if (md is null) return null;
+
+            /* match con ratings */
+            var ratings = await _context.Ratings
+                .Include(r => r.RatedUser)
+                    .ThenInclude(u => u!.LastLocation)
+                .Include(r => r.RatedUser)
+                    .ThenInclude(u => u!.ProfilePic)
+                .Where(r => r.IdMandadito == md.Id)
+                .ToListAsync();
+
+            md.Ratings = ratings;
+
+            return md;
         }
+
 
         public async Task AddAsync(Mandadito mandadito)
         {

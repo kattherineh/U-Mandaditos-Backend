@@ -1,6 +1,5 @@
-﻿using Aplication.DTOs.Locations;
-using Aplication.DTOs.Mandaditos;
-using Aplication.DTOs.Media;
+﻿using Aplication.DTOs.Mandaditos;
+using Aplication.DTOs;
 using Aplication.DTOs.Offers;
 using Aplication.DTOs.Posts;
 using Aplication.DTOs.Users;
@@ -45,7 +44,7 @@ public class MandaditoService : IMandaditoService
                             {
                                 Id = mandadito.Offer.UserCreator.Id,
                                 Name = mandadito.Offer.UserCreator.Name,
-                                LastLocation = mandadito.Offer.UserCreator.LastLocation?.Name ,
+                                LastLocation = mandadito.Offer.UserCreator.LastLocation?.Name,
                                 ProfilePicture = mandadito.Offer.UserCreator.ProfilePic?.Link
                             },
                         CreatedAt = mandadito.Offer.CreatedAt,
@@ -69,7 +68,16 @@ public class MandaditoService : IMandaditoService
                         },
                         PickupLocation = mandadito.Post.PickUpLocation.Name,
                         DeliveryLocation = mandadito.Post.DeliveryLocation.Name
-                    }
+                    },
+                Ratings = mandadito.Ratings?.Select(r => r.RatedUser == null ? null : new RatingResponseDTO
+                {
+                    Id = r.Id,
+                    UserName = r.RatedUser.Name,
+                    ProfilePic = r.RatedUser.ProfilePic!.Link,
+                    Score = r.RatingNum,
+                    Review = r.Review,
+                    DatePosted = r.CreatedAt,
+                }).ToList() ?? new List<RatingResponseDTO?>()
             };
     }
 
@@ -112,4 +120,5 @@ public class MandaditoService : IMandaditoService
             PostId = mandadito.IdPost
         };
     }
+
 }

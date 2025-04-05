@@ -15,6 +15,8 @@ namespace Domain.Entities
 
         public DateTime AcceptedAt { get; set; }
         public DateTime? DeliveredAt { get; set; }
+
+        public List<Rating>? Ratings { get; set; }
         
         public Mandadito(string securityCode, double acceptedRate, int idPost, int idOffer, DateTime acceptedAt)
         {

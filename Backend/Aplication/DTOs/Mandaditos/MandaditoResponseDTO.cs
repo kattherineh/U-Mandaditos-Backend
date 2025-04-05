@@ -11,4 +11,5 @@ public class MandaditoResponseDTO
     public double AcceptedRate { get; set; }
     public OfferDTO? Offer { get; set; }
     public PostMandaditoDTO? Post { get; set; }
+    public List<RatingResponseDTO?> Ratings { get; set; } = new List<RatingResponseDTO?>();
 }

@@ -51,5 +51,14 @@ namespace API.Controllers
             var rating = await _ratingService.GetByIdAsync(id);
             return rating is null ? NotFound($"El rating con id {id} no existe.") : Ok(rating);
         }
+
+        /* ratings por mandaditos */
+        [HttpGet("mandaditos/{idMandadito:int}")]
+        public async Task<ActionResult> GetByMandadito(int idMandadito)
+        {
+            var ratings = await _ratingService.GetByMandaditoAsync(idMandadito);
+            return ratings is null ? NotFound($"No se encontraron ratings para el mandadito con id {idMandadito}.") : Ok(ratings);
+        }
+
     }
 }

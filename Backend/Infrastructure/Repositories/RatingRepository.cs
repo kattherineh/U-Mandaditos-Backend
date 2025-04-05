@@ -92,15 +92,54 @@ namespace Infrastructure.Repositories
         public async Task<IEnumerable<Rating>> GetByRatedUserAsync(int idRatedUser)
         {
             return await _context.Ratings
-                .Include(r => r.RaterUser)
-                    .ThenInclude(u => new { u!.Name, u.ProfilePic })
-                .Include(r => r.RaterUser)
-                    .ThenInclude(u => u!.ProfilePic)
-                        .ThenInclude(p => p!.Link)
-                .Include(r => r.RatedRole)
-                    .ThenInclude(rr => rr!.Name)
+                .Include(r => r.RaterUser)  // Incluye la entidad completa RaterUser
+                .Include(r => r.RatedRole)  // Incluye la entidad completa RatedRole
                 .Where(r => r.RatedUser != null && r.RatedUser.Id == idRatedUser)
+                .Select(r => new Rating
+                {
+                    Id = r.Id,
+                    IdMandadito = r.IdMandadito,
+                    Mandadito = r.Mandadito,
+                    IdRater = r.IdRater,
+                    RaterUser = new User
+                    {
+                        Id = r.RaterUser!.Id,
+                        Name = r.RaterUser.Name,  // Proyectamos solo las propiedades necesarias
+                        ProfilePic = r.RaterUser.ProfilePic
+                    },
+                    IdRatedUser = r.IdRatedUser,
+                    RatedUser = r.RatedUser,
+                    IdRatedRole = r.IdRatedRole,
+                    RatedRole = new UserRole
+                    {
+                        Id = r.RatedRole!.Id,
+                        Name = r.RatedRole.Name // Proyectamos solo las propiedades necesarias
+                    },
+                    RatingNum = r.RatingNum,
+                    Review = r.Review,
+                    CreatedAt = r.CreatedAt
+                })
                 .ToListAsync();
         }
+
+        public async Task<IEnumerable<Rating>> GetByMandaditoAsync(int idMandadito)
+        {
+            return await _context.Ratings
+                .Include(r => r.Mandadito)
+                    .ThenInclude(m => m!.Post)
+                        .ThenInclude(p => p!.PosterUser)
+                .Include(r => r.Mandadito)
+                    .ThenInclude(m => m!.Post)
+                        .ThenInclude(p => p!.DeliveryLocation)
+                .Include(r => r.Mandadito)
+                    .ThenInclude(m => m!.Post)
+                        .ThenInclude(p => p!.PickUpLocation)
+                .Include(r => r.Mandadito)
+                    .ThenInclude(m => m!.Offer)
+                        .ThenInclude(o => o!.UserCreator)
+                .Where(r => r.IdMandadito == idMandadito)
+                .ToListAsync();
+        }
+
     }
 }

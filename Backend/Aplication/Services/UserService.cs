@@ -69,15 +69,19 @@ public class UserService : IUserService
         catch (Exception e)
         {
             var errorMessage = e.InnerException?.Message ?? e.Message;
+            if (errorMessage.Contains("Cannot insert duplicate key") && errorMessage.Contains("unique index 'IX_Users_Email'"))
+            {
+                errorMessage = "Ya existe un usuario registrado con este email.";
+            }
 
             if (errorMessage.Contains("Cannot insert duplicate key") && errorMessage.Contains("unique index 'IX_Users_Dni'"))
             {
-                errorMessage = "Error: Un usuario con este DNI ha sido registrado anteriormente.";
+                errorMessage = "Un usuario con este DNI ha sido registrado anteriormente.";
             }
 
             if (errorMessage.Contains("The INSERT statement conflicted") && errorMessage.Contains("Careers"))
             {
-                errorMessage = "Error: Se está haciendo referencia a una carrera inexistente.";
+                errorMessage = "Se está haciendo referencia a una carrera inexistente.";
             }
 
             return new ResponseDTO<UserResponseDTO>
@@ -261,7 +265,9 @@ public class UserService : IUserService
     {
         try
         {
-            var result = await _userRepository.ChangePasswordAsync(id, password);
+            var hashedpw = _passwordHasherService.HashPassword(password);
+
+            var result = await _userRepository.ChangePasswordAsync(id, hashedpw);
             return new ResponseDTO<bool>
             {
                 Success = result,
