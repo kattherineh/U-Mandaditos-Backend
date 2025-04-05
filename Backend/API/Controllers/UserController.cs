@@ -19,6 +19,7 @@ public class UserController: ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateUserAsync([FromForm] UserRequestDTO userRequest)
     {
+
         if (userRequest.Photo == null || userRequest.Photo.Length == 0)
             return BadRequest("No file uploaded.");
         try
@@ -97,12 +98,12 @@ public class UserController: ControllerBase
         }
     }
 
-    [HttpPatch("{id}/password")]
-    public async Task<IActionResult> ChangePasswordAsync(int id, [FromBody] UserNewPasswordRequestDTO user)
+    [HttpPatch("password")]
+    public async Task<IActionResult> ChangePasswordAsync([FromBody] UserNewPasswordRequestDTO user)
     {
         try
         {
-            var res = await _userService.ChangePasswordAsync(id, user.Password);
+            var res = await _userService.ChangePasswordAsync(user.Id, user.Password);
             return Ok(res);
         }
         catch (Exception ex)

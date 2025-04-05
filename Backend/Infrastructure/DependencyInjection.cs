@@ -60,6 +60,9 @@ public static class DependencyInjection
         services.AddScoped<IManagementService, ManagementService>();
         services.AddScoped<IManagementRepository, ManagementRepository>();
 
+        services.AddScoped<IRatingService, RatingService>();
+        services.AddScoped<IRatingRepository, RatingRepository>();
+
         services.AddScoped<IEmailService, EmailService>();
         services.AddScoped<ISessionLogRepository, SessionLogRepository>();
 

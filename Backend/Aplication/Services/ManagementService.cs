@@ -28,7 +28,6 @@ public class ManagementService : IManagementService
         {
             // Buscar usuario
             var user = await _userService.GetByEmailAsync(email);
-            Console.WriteLine(user?.Id + "usuarioooooooooooo");
             if (user == null)
             {
                 return new ResponseDTO<ManagementPwdResponseDTO?>
@@ -50,14 +49,10 @@ public class ManagementService : IManagementService
                     Data = null
                 };
             }
-
-            Console.WriteLine(code);
-            Console.WriteLine(user + " 1");
-
             var management = new Management
             {
                 UserId = user.Id,
-                ManegementRoleId = 18,
+                ManegementRoleId = 1, /* Cambio de contraseña */
                 Code = code,
                 Active = true
             };
@@ -91,6 +86,7 @@ public class ManagementService : IManagementService
                 Data = new ManagementPwdResponseDTO
                 {
                     IdManagement = mng.Id,
+                    IdUser = mng.UserId
                 }
             };
         }

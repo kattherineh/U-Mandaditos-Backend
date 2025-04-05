@@ -10,5 +10,6 @@ namespace Aplication.Interfaces {
         Task<bool> UpdateAsync(Rating rating);
         Task<bool> DeleteAsync(int id);
         Task<IEnumerable<Rating>> GetByRatedUserAsync(int idRatedUser);
-    }
+/*         Task<IEnumerable<Rating>> GetByMandaditoAsync(int idMandadito);
+ */    }
 }

@@ -2,7 +2,6 @@
 using Aplication.DTOs.General;
 using Aplication.DTOs.Locations;
 using Aplication.DTOs.Mandaditos;
-using Aplication.DTOs.Media;
 using Aplication.DTOs.Offers;
 using Aplication.DTOs.Posts;
 using Aplication.DTOs.Users;
@@ -28,7 +27,10 @@ public class MandaditoService : IMandaditoService
 
     public async Task<ResponseDTO<MandaditoResponseDTO?>> GetByIdAsync(int id)
     {
+        Console.WriteLine("id man: " + id);
+        
         var mandadito = await _mandaditoRepository.GetByIdAsync(id);
+        Console.WriteLine(mandadito);
         
         if (mandadito == null)
         {
@@ -43,8 +45,11 @@ public class MandaditoService : IMandaditoService
         var userId = _authenticatedUserService.GetAuthenticatedUserId();
         var isOwner = mandadito.Post?.PosterUser.Id == userId;
         var isRunner = mandadito.Offer?.UserCreator.Id == userId;
+        Console.WriteLine("id user" + userId);
+        Console.WriteLine("owner" + isOwner);
 
-        if (!isOwner || !isRunner)
+
+        if (!(isOwner || isRunner))
         {
             return new ResponseDTO<MandaditoResponseDTO?>()
             {
@@ -80,7 +85,7 @@ public class MandaditoService : IMandaditoService
                             {
                                 Id = mandadito.Offer.UserCreator.Id,
                                 Name = mandadito.Offer.UserCreator.Name,
-                                LastLocation = mandadito.Offer.UserCreator.LastLocation?.Name ,
+                                LastLocation = mandadito.Offer.UserCreator.LastLocation?.Name,
                                 ProfilePicture = mandadito.Offer.UserCreator.ProfilePic?.Link
                             },
                         CreatedAt = mandadito.Offer.CreatedAt.ToString("g"),
