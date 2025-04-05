@@ -12,7 +12,7 @@ namespace Aplication.DTOs
 
         public string Review { get; set; } = string.Empty;
 
-        public DateTime DatePosted { get; set; }
+        public string DatePosted { get; set; }
 
         public bool isRunner { get; set; }
         
