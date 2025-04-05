@@ -91,27 +91,17 @@ public class PostService : IPostService
         };
     }
 
-    public async Task<ResponseDTO<IEnumerable<PostResponseDTO>>> GetAllNearAsync(int currentLocationId)
+    public async Task<IEnumerable<PostResponseDTO>> GetAllNearAsync(int currentLocationId)
     {
         var posts = await _postRepository.GetAllAsync();
-        
-        var nearPosts= posts.Where(post => post.IdPickUpLocation == currentLocationId && post.Completed == false).Select(post => new PostResponseDTO
+        return posts.Where(post => post.IdPickUpLocation == currentLocationId).Select(post => new PostResponseDTO
         {
             Id = post.Id,
-            Title = post.Title,
-            PickUpLocation = post.DeliveryLocation.Name,
-            DeliveryLocation = post.PickUpLocation.Name,
+            Description = post.Description,
             SuggestedValue = post.SugestedValue,
             PosterUserName = post.PosterUser.Name,
-            CreatedAt = post.CreatedAt.ToString("HH:mm") //SOlo la hora y minutos
+            CreatedAt = post.CreatedAt.ToString("yyyy-MM-dd HH:mm")
         });
-        
-        return new ResponseDTO<IEnumerable<PostResponseDTO>>
-        {
-            Success = true,
-            Message = "Se han encontrado los siguientes posts cercanos.",
-            Data = nearPosts
-        };
     }
     
     public async Task<IEnumerable<PostResponseDTO>> GetPostByLocation(int currentLocationId)
