@@ -8,6 +8,6 @@ namespace Aplication.Interfaces {
         Task<bool> DeleteAsync(int id);
         Task<RatingResponseDTO?> GetByIdAsync(int id);
         Task<IEnumerable<RatingResponseDTO?>> GetByRatedUserAsync(int idRatedUser);
-        Task<IEnumerable<RatingResponseDTO?>> GetByMandaditoAsync(int idMandadito);
-    }
+/*         Task<IEnumerable<RatingResponseDTO?>> GetByMandaditoAsync(int idMandadito);
+ */    }
 }

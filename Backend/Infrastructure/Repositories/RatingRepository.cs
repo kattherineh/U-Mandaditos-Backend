@@ -122,7 +122,7 @@ namespace Infrastructure.Repositories
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<Rating>> GetByMandaditoAsync(int idMandadito)
+/*         public async Task<IEnumerable<Rating>> GetByMandaditoAsync(int idMandadito)
         {
             return await _context.Ratings
                 .Include(r => r.Mandadito)
@@ -139,7 +139,7 @@ namespace Infrastructure.Repositories
                         .ThenInclude(o => o!.UserCreator)
                 .Where(r => r.IdMandadito == idMandadito)
                 .ToListAsync();
-        }
+        } */
 
     }
 }

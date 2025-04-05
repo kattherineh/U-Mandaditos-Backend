@@ -12,7 +12,7 @@ public class OfferDTO
 
     public UserResponseMandaditoDTO? UserCreator { get; set; }
 
-    public DateTime CreatedAt { get; set; }
+    public string CreatedAt { get; set; }
     public bool IsCounterOffer { get; set; }
     public bool Accepted {  get; set; }
 }

@@ -32,7 +32,7 @@ public class RatingService : IRatingService
             ProfilePic = rating.RaterUser?.ProfilePic?.Link ?? "Unknown",
             Score = rating.RatingNum,
             Review = rating.Review,
-            DatePosted = rating.CreatedAt,
+            DatePosted = rating.CreatedAt.ToString("g"),
             isRunner = rating.RatedRole?.Name == "Runner" ? true : false
         };
     }
@@ -48,7 +48,7 @@ public class RatingService : IRatingService
             ProfilePic = rating.RaterUser?.ProfilePic?.Link ?? "Unknown",
             Score = rating.RatingNum,
             Review = rating.Review,
-            DatePosted = rating.CreatedAt,
+            DatePosted = rating.CreatedAt.ToString("g"),
             isRunner = rating.RatedRole?.Name == "Runner" ? true : false
         });
     }
@@ -99,7 +99,7 @@ public class RatingService : IRatingService
         };
     }
 
-    public async Task<IEnumerable<RatingResponseDTO?>> GetByMandaditoAsync(int idMandadito)
+/*     public async Task<IEnumerable<RatingResponseDTO?>> GetByMandaditoAsync(int idMandadito)
     {
         var ratings = await _ratingRepository.GetByMandaditoAsync(idMandadito);
         return ratings.Select(rating => new RatingResponseDTO
@@ -112,6 +112,6 @@ public class RatingService : IRatingService
             DatePosted = rating.CreatedAt,
             isRunner = rating.RatedRole?.Name == "Runner" ? true : false
         });
-    }
+    } */
 
 }

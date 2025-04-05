@@ -12,11 +12,10 @@ namespace Domain.Entities
 
         public int IdOffer { get; set; }
         public Offer? Offer { get; set; }
-
+        
+        public ICollection<Rating> Ratings { get; set; } = new List<Rating>();
         public DateTime AcceptedAt { get; set; }
         public DateTime? DeliveredAt { get; set; }
-
-        public List<Rating>? Ratings { get; set; }
         
         public Mandadito(string securityCode, double acceptedRate, int idPost, int idOffer, DateTime acceptedAt)
         {
