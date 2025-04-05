@@ -52,45 +52,18 @@ public class PostRepository: IPostRepository
         return await _context.SaveChangesAsync() > 0;
     }
     
-    private double CalculateDistance(double lat1, double lon1, double lat2, double lon2)
+    public async Task<IEnumerable<Post>> GetPostsByLocationIdAsync(int idLocation)
     {
-        const double R = 6371000; 
-        double dLat = (lat2 - lat1) * (Math.PI / 180);
-        double dLon = (lon2 - lon1) * (Math.PI / 180);
-
-        double a = Math.Sin(dLat / 2) * Math.Sin(dLat / 2) +
-                   Math.Cos(lat1 * (Math.PI / 180)) * Math.Cos(lat2 * (Math.PI / 180)) *
-                   Math.Sin(dLon / 2) * Math.Sin(dLon / 2);
-
-        double c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
-        return R * c; 
-    }
-
-
-    public async Task<IEnumerable<Post>> GetPostsNearLocationAsync(int idLocation, double radiusMeters = 70)
-    {
-        var referenceLocation = await _context.Locations.FindAsync(idLocation);
-        if (referenceLocation == null)
-            return new List<Post>(); 
-
-        double lat = referenceLocation.Latitude;
-        double lon = referenceLocation.Longitude;
-
-        double degreeRadius = radiusMeters / 111320.0; 
-
-        // Filtrar posts cercanos en base a la distancia
-        var nearbyPosts = await _context.Posts
+        var posts = await _context.Posts
+            .Where(p => p.IdPickUpLocation.HasValue && p.IdPickUpLocation.Value == idLocation)
             .Include(p => p.PickUpLocation)
             .Include(p => p.DeliveryLocation)
-            .Where(p => 
-                p.PickUpLocation != null &&
-                p.DeliveryLocation != null &&
-                CalculateDistance(lat, lon, p.PickUpLocation.Latitude, p.PickUpLocation.Longitude) <= radiusMeters ||
-                CalculateDistance(lat, lon, p.DeliveryLocation.Latitude, p.DeliveryLocation.Longitude) <= radiusMeters
-            )
+            .Include(p => p.PosterUser)
+            .OrderByDescending(p => p.CreatedAt)
             .ToListAsync();
 
-        return nearbyPosts;
+        Console.WriteLine($"Posts encontrados: {posts.Count}");
+        return posts;
     }
     
     public async Task<IEnumerable<Post>> GetPostsByPosterUserId(int idPosterUser)
@@ -135,4 +108,50 @@ public class PostRepository: IPostRepository
             .ToListAsync();
     }
 
+    public async Task<IEnumerable<Post>> GetPostsActive(int idPosterUser)
+    {
+        
+        return await _context.Posts
+            .Include(p => p.PosterUser)
+            .Include(p => p.PosterUser!.ProfilePic) // Carga la relación ProfilePic
+            .Include(p => p.PickUpLocation)
+            .Include(p => p.DeliveryLocation)
+            .Where(p => p.IdPosterUser == idPosterUser)
+            .Where(p=>p.Completed == false)
+            .OrderByDescending(p => p.CreatedAt)
+            .Select(p => new Post 
+            {
+                Id = p.Id,
+                Title = p.Title,  
+                Description = p.Description, 
+                SugestedValue = p.SugestedValue,
+            
+                PosterUser = p.PosterUser != null ? new User
+                {
+                    Name = p.PosterUser.Name,
+                    LastLocation = p.PosterUser.LastLocation,
+                    Rating = p.PosterUser.Rating,
+                    ProfilePic = p.PosterUser.ProfilePic 
+                } : null,
+            
+                PickUpLocation = p.PickUpLocation != null ? new Location
+                {
+                    Latitude = p.PickUpLocation.Latitude,
+                    Longitude = p.PickUpLocation.Longitude,
+                    Name = p.PickUpLocation.Name
+                } : null,
+            
+                DeliveryLocation = p.DeliveryLocation != null ? new Location
+                {
+                    Latitude = p.DeliveryLocation.Latitude,
+                    Longitude = p.DeliveryLocation.Longitude,
+                    Name = p.DeliveryLocation.Name
+                } : null,
+            
+                // Resto de propiedades
+                CreatedAt = p.CreatedAt,
+                // ...
+            })
+            .ToListAsync();
+    }
 }

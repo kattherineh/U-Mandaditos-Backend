@@ -1,9 +1,12 @@
-﻿using Aplication.DTOs.Locations;
+﻿using Aplication.DTOs;
+using Aplication.DTOs.General;
+using Aplication.DTOs.Locations;
 using Aplication.DTOs.Mandaditos;
 using Aplication.DTOs.Media;
 using Aplication.DTOs.Offers;
 using Aplication.DTOs.Posts;
 using Aplication.DTOs.Users;
+using Aplication.Interfaces.Auth;
 using Aplication.Interfaces.Helpers;
 using Aplication.Interfaces.Mandaditos;
 using Domain.Entities;
@@ -14,24 +17,56 @@ public class MandaditoService : IMandaditoService
 {
     private readonly IMandaditoRepository _mandaditoRepository;
     private readonly ICodeGeneratorService _codeGeneratorService;
+    private readonly IAuthenticatedUserService _authenticatedUserService;
 
-    public MandaditoService(IMandaditoRepository mandaditoRepository, ICodeGeneratorService codeGeneratorService)
+    public MandaditoService(IMandaditoRepository mandaditoRepository, ICodeGeneratorService codeGeneratorService, IAuthenticatedUserService authenticatedUserService)
     {
         _mandaditoRepository = mandaditoRepository;
         _codeGeneratorService = codeGeneratorService;
+        _authenticatedUserService = authenticatedUserService;
     }
 
-    public async Task<MandaditoResponseDTO?> GetByIdAsync(int id)
+    public async Task<ResponseDTO<MandaditoResponseDTO?>> GetByIdAsync(int id)
     {
         var mandadito = await _mandaditoRepository.GetByIdAsync(id);
-        return mandadito is null
-            ? null
-            : new MandaditoResponseDTO
+        
+        if (mandadito == null)
+        {
+            return new ResponseDTO<MandaditoResponseDTO?>()
+            {
+                Success = false,
+                Message = "Mandadito not found",
+                Data = null
+            };
+        }
+        
+        var userId = _authenticatedUserService.GetAuthenticatedUserId();
+        var isOwner = mandadito.Post?.PosterUser.Id == userId;
+        var isRunner = mandadito.Offer?.UserCreator.Id == userId;
+
+        if (!isOwner || !isRunner)
+        {
+            return new ResponseDTO<MandaditoResponseDTO?>()
+            {
+                Success = false,
+                Message = "El usuario autenticado no es el dueño del mandadito ni el runner, por lo tanto no tiene acceso a esta información.",
+                Data = null
+            };
+        }
+        
+        var data = new MandaditoResponseDTO
             {
                 Id = mandadito.Id,
                 SecurityCode = mandadito.SecurityCode,
                 AcceptedAt = mandadito.AcceptedAt,
                 AcceptedRate = mandadito.AcceptedRate,
+                Ratings = mandadito.Ratings.Select(r => new RatingMandaditosDTO()
+                {
+                    DatePosted = r.CreatedAt.ToString("g"),
+                    Review = r.Review,
+                    IsRunner = r.RatedRole?.Id == 2,
+                    Rating = r.RatingNum
+                }),
                 Offer = mandadito.Offer is null
                     ? null
                     : new OfferDTO
@@ -48,7 +83,7 @@ public class MandaditoService : IMandaditoService
                                 LastLocation = mandadito.Offer.UserCreator.LastLocation?.Name ,
                                 ProfilePicture = mandadito.Offer.UserCreator.ProfilePic?.Link
                             },
-                        CreatedAt = mandadito.Offer.CreatedAt,
+                        CreatedAt = mandadito.Offer.CreatedAt.ToString("g"),
                         IsCounterOffer = mandadito.Offer.IsCounterOffer,
                         Accepted = mandadito.Offer.Accepted
                     },
@@ -59,7 +94,7 @@ public class MandaditoService : IMandaditoService
                         Id = mandadito.Post.Id,
                         SuggestedValue = mandadito.Post.SugestedValue,
                         Description = mandadito.Post.Description,
-                        CreatedAt = mandadito.Post.CreatedAt,
+                        CreatedAt = mandadito.Post.CreatedAt.ToString("g"),
                         PosterUser = new UserResponseMandaditoDTO
                         {
                             Id = mandadito.Post.PosterUser.Id,
@@ -71,6 +106,13 @@ public class MandaditoService : IMandaditoService
                         DeliveryLocation = mandadito.Post.DeliveryLocation.Name
                     }
             };
+        
+        return new ResponseDTO<MandaditoResponseDTO?>()
+        {
+            Success = true,
+            Message = "El mandadito fue encontrado correctamente.",
+            Data = data
+        };
     }
 
     public async Task<IEnumerable<MandaditoHistoryResponseDTO>?> GetHistoryAsync(int userId)
@@ -111,5 +153,17 @@ public class MandaditoService : IMandaditoService
             OfferId = mandadito.IdOffer,
             PostId = mandadito.IdPost
         };
+    }
+
+    public async Task<Dictionary<string, List<Mandadito>>> Execute()
+    {
+        var userId = _authenticatedUserService.GetAuthenticatedUserId();
+        return await _mandaditoRepository.GetHistoryMandaditos(userId);
+    }
+    
+    public async Task<Dictionary<string, List<Mandadito>>> ExecuteGet()
+    {
+        var userId = _authenticatedUserService.GetAuthenticatedUserId();
+        return await _mandaditoRepository.GetHistoryMandaditosLikeRunner(userId);
     }
 }

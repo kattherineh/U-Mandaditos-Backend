@@ -18,21 +18,21 @@ namespace Infrastructure.Repositories
         {
             return await _context.Mandaditos
                 .Include(m => m.Post)
-                    .ThenInclude(p => p!.PosterUser)
-                        .ThenInclude(u => u.LastLocation)
+                .ThenInclude(p => p!.PosterUser)
+                .ThenInclude(u => u.LastLocation)
                 .Include(m => m.Post)
-                    .ThenInclude(p => p!.PosterUser)
-                        .ThenInclude(u => u.ProfilePic)
+                .ThenInclude(p => p!.PosterUser)
+                .ThenInclude(u => u.ProfilePic)
                 .Include(m => m.Post)
-                    .ThenInclude(p => p!.PickUpLocation)
+                .ThenInclude(p => p!.PickUpLocation)
                 .Include(m => m.Post)
-                    .ThenInclude(p => p!.DeliveryLocation)
+                .ThenInclude(p => p!.DeliveryLocation)
                 .Include(m => m.Offer)
-                    .ThenInclude(o => o!.UserCreator)
-                        .ThenInclude(u => u!.LastLocation)
-                .Include(m=> m.Offer)
-                    .ThenInclude(o => o!.UserCreator)
-                        .ThenInclude(u => u!.ProfilePic)
+                .ThenInclude(o => o!.UserCreator)
+                .ThenInclude(u => u!.LastLocation)
+                .Include(m => m.Offer)
+                .ThenInclude(o => o!.UserCreator)
+                .ThenInclude(u => u!.ProfilePic)
                 .ToListAsync();
         }
 
@@ -52,9 +52,11 @@ namespace Infrastructure.Repositories
                 .Include(m => m.Offer)
                     .ThenInclude(o => o!.UserCreator)
                         .ThenInclude(u => u!.LastLocation)
-                .Include(m=> m.Offer)
+                .Include(m => m.Offer)
                     .ThenInclude(o => o!.UserCreator)
                         .ThenInclude(u => u!.ProfilePic)
+                .Include(m => m.Ratings)
+                    .ThenInclude(r => r.RatedRole) 
                 .FirstOrDefaultAsync(p => p.Id == id);
         }
 
@@ -71,6 +73,77 @@ namespace Infrastructure.Repositories
 
             _context.Mandaditos.Remove(mandadito);
             return await _context.SaveChangesAsync() > 0;
+        }
+
+        public async Task<Dictionary<string, List<Mandadito>>> GetHistoryMandaditos(int userId)
+        {
+            var mandaditos = await _context.Mandaditos
+                .Include(m => m.Post)
+                .ThenInclude(p => p.PickUpLocation)
+                .Include(m => m.Post)
+                .ThenInclude(p => p.DeliveryLocation)
+                .Include(m => m.Offer)
+                .Where(m => m.Post.IdPosterUser == userId)
+                .OrderByDescending(m => m.AcceptedAt)
+                .ToListAsync();
+
+            var history = new Dictionary<string, List<Mandadito>>();
+        
+            foreach (var mandadito in mandaditos)
+            {
+                var dateKey = GetDateKey(mandadito.AcceptedAt);
+            
+                if (!history.ContainsKey(dateKey))
+                {
+                    history[dateKey] = new List<Mandadito>();
+                }
+            
+                history[dateKey].Add(mandadito);
+            }
+
+            return history;
+        }
+        
+        public async Task<Dictionary<string, List<Mandadito>>> GetHistoryMandaditosLikeRunner(int userId)
+        {
+            var mandaditos = await _context.Mandaditos
+                .Include(m => m.Post)
+                .ThenInclude(p => p.PickUpLocation)
+                .Include(m => m.Post)
+                .ThenInclude(p => p.DeliveryLocation)
+                .Include(m => m.Offer)
+                .Where(m => m.Offer.IdUserCreator == userId)
+                .OrderByDescending(m => m.AcceptedAt)
+                .ToListAsync();
+
+            var history = new Dictionary<string, List<Mandadito>>();
+        
+            foreach (var mandadito in mandaditos)
+            {
+                var dateKey = GetDateKey(mandadito.AcceptedAt);
+            
+                if (!history.ContainsKey(dateKey))
+                {
+                    history[dateKey] = new List<Mandadito>();
+                }
+            
+                history[dateKey].Add(mandadito);
+            }
+
+            return history;
+        }
+        
+        private string GetDateKey(DateTime fecha)
+        {
+            var today = DateTime.Today;
+            var yesterday = today.AddDays(-1);
+
+            if (fecha.Date == today)
+                return "Hoy";
+            if (fecha.Date == yesterday)
+                return "Ayer";
+        
+            return fecha.ToString("d 'de' MMMM");
         }
 
         public async Task<bool> UpdateAsync(Mandadito mandadito)

@@ -12,5 +12,6 @@ public interface IPostService
     Task<IEnumerable<PostResponseDTO>> GetPostsByPosterUserIdAsync(int idPosterUser);
     Task<int> GetPostsCountAsync(int idPosterUser);
     Task<PostResponseDTO> GetPostByIdAsync(int idPost);
-    
+    Task<IEnumerable<PostResponseDTO>> GetActivePosts();
+
 }

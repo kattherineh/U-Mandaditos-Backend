@@ -31,19 +31,21 @@ public class PostController : ControllerBase
         }
     }
     
-    [HttpGet("near")]
+    [HttpGet("near/get")]
     public async Task<IActionResult> GetNear([FromQuery] int currentLocationId)
     {
         var posts = await _postService.GetAllNearAsync(currentLocationId);
         return Ok(posts);
     }
     
-    [HttpGet("near/posts")]
-    public async Task<IActionResult> GetNearPosts([FromQuery] int currentLocationId)
+    [HttpGet("near/{idLocation}")]
+    public async Task<IActionResult> GetPostByLocation([FromRoute] int idLocation)
     {
-        var posts = await _postService.GetPostsNearLocationAsync(currentLocationId);
+        Console.WriteLine($"Recibido idLocation: {idLocation}");
+        var posts = await _postService.GetPostByLocation(idLocation);
         return Ok(posts);
     }
+
     
     [HttpGet("{id}")]
     public async Task<IActionResult> GetPostByUser([FromQuery] int idUser)
@@ -63,6 +65,13 @@ public class PostController : ControllerBase
     public async Task<IActionResult> GetPostById([FromQuery] int idPost)
     {
         var post = await _postService.GetPostByIdAsync(idPost);
+        return Ok(post);
+    }
+    
+    [HttpGet("active")]
+    public async Task<IActionResult> GetActivePosts()
+    {
+        var post = await _postService.GetActivePosts();
         return Ok(post);
     }
 }

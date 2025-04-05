@@ -193,6 +193,11 @@ namespace Infrastructure.Persistence
                     .HasForeignKey(m => m.IdOffer)
                     .OnDelete(DeleteBehavior.Restrict);
 
+                entity.HasMany(m => m.Ratings)
+                    .WithOne(r => r.Mandadito)
+                    .HasForeignKey(r => r.IdMandadito)
+                    .OnDelete(DeleteBehavior.Cascade);
+
             });
 
             modelBuilder.Entity<Rating>(entity =>
@@ -200,7 +205,7 @@ namespace Infrastructure.Persistence
                 entity.HasKey(r => r.Id);
 
                 entity.HasOne(r => r.Mandadito)
-                    .WithMany()
+                    .WithMany(m => m.Ratings)
                     .HasForeignKey(r => r.IdMandadito)
                     .OnDelete(DeleteBehavior.Restrict)
                     .IsRequired();

@@ -32,7 +32,7 @@ public class RatingService : IRatingService
             ProfilePic = rating.RaterUser?.ProfilePic?.Link ?? "Unknown",
             Score = rating.RatingNum,
             Review = rating.Review,
-            DatePosted = rating.CreatedAt,
+            DatePosted = rating.CreatedAt.ToString("g"),
             isRunner = rating.RatedRole?.Name == "Runner" ? true : false
         };
     }
@@ -48,7 +48,7 @@ public class RatingService : IRatingService
             ProfilePic = rating.RaterUser?.ProfilePic?.Link ?? "Unknown",
             Score = rating.RatingNum,
             Review = rating.Review,
-            DatePosted = rating.CreatedAt,
+            DatePosted = rating.CreatedAt.ToString("g"),
             isRunner = rating.RatedRole?.Name == "Runner" ? true : false
         });
     }

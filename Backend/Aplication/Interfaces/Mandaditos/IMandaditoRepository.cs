@@ -9,5 +9,7 @@ namespace Aplication.Interfaces.Mandaditos
         Task AddAsync(Mandadito mandadito);
         Task<bool> UpdateAsync(Mandadito mandadito);
         Task<bool> DeleteAsync(int id);
+        Task<Dictionary<string, List<Mandadito>>> GetHistoryMandaditos(int userId);
+        Task<Dictionary<string, List<Mandadito>>> GetHistoryMandaditosLikeRunner(int userId);
     }
 }

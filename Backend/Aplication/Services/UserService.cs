@@ -114,7 +114,7 @@ public class UserService : IUserService
                 Name = user.Name,
                 Dni = user.Dni,
                 Email = user.Email,
-                BirthDay = user.BirthDay,
+                BirthDay = user.BirthDay.ToString("yy-MM-dd"),
                 Score = user.Rating,
                 ProfilePic = new MediaResponseDTO
                 {
@@ -174,7 +174,7 @@ public class UserService : IUserService
                 Name = user.Name,
                 Dni = user.Dni,
                 Email = user.Email,
-                BirthDay = user.BirthDay,
+                BirthDay = user.BirthDay.ToString("yyyy-MM-dd"),
                 Score = user.Rating,
                 ProfilePic = new MediaResponseDTO
                 {
@@ -321,6 +321,90 @@ public class UserService : IUserService
         }
     }
 
+     public async Task<ResponseDTO<UpdatedResponseDTO>> UpdateProfileAsync(UserUpdateProfileRequestDTO dto)
+    {
+        try
+        {
+            var userId = _authenticatedUserService.GetAuthenticatedUserId();
+            var userToUpdate = await _userRepository.GetByIdAsync(userId);
+
+            if (userToUpdate is null)
+                return new ResponseDTO<UpdatedResponseDTO>
+                {
+                    Success = false,
+                    Message = "Usuario no encontrado",
+                    Data = new UpdatedResponseDTO
+                    {
+                        Updated = false
+                    }
+                };
+
+            // Validar carrera
+            var career = await _careerRepository.GetByIdAsync(dto.IdCareer);
+            if (career == null)
+            {
+                return new ResponseDTO<UpdatedResponseDTO>
+                {
+                    Success = false,
+                    Message = "Carrera no encontrada",
+                    Data = new UpdatedResponseDTO
+                    {
+                        Updated = false
+                    }
+                };
+            }
+
+            // Si se sube una nueva foto de perfil, se actualiza
+            if (dto.ProfilePic is not null)
+            {
+                var fileName = $"{dto.Name}-{userToUpdate.Dni}";
+                var photo = await _firebaseService.UploadProfilePicture(dto.ProfilePic, fileName, "image/jpeg");
+                var profilePic = new Media(fileName, photo);
+                userToUpdate.ProfilePic = profilePic;
+            }
+            
+            userToUpdate.Name = dto.Name;
+            userToUpdate.Email = dto.Email;
+            userToUpdate.BirthDay = dto.BirthDay;
+            userToUpdate.Career = career;
+
+            var isUpdated = await _userRepository.UpdateAsync(userToUpdate);
+
+            if (isUpdated == false)
+            {
+                return new ResponseDTO<UpdatedResponseDTO>
+                {
+                    Success = false,
+                    Message = $"Ocurrió un error al actualizar al usuario {dto.Name}",
+                    Data = new UpdatedResponseDTO
+                    {
+                        Updated = false,
+                    }
+                };
+            }
+
+            return new ResponseDTO<UpdatedResponseDTO>
+            {
+                Success = true,
+                Message = $"El usuario {dto.Name} ha sido actualizado correctamente",
+                Data = new UpdatedResponseDTO
+                {
+                    Updated = true
+                }
+            };
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+            return new ResponseDTO<UpdatedResponseDTO>
+            {
+                Success = false,
+                Message = "Ocurrió un error inesperado al actualizar el usuario",
+                Data = null
+            };
+        }
+    }
+    
     public async Task<ResponseDTO<bool>> ChangePasswordAsync(int id, string password)
     {
         try

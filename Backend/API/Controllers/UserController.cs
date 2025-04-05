@@ -81,6 +81,21 @@ public class UserController: ControllerBase
             return StatusCode(500, $"Error interno del servidor: {ex.Message}");
         }
     }
+    
+    [Authorize]
+    [HttpPut("update")]
+    public async Task<IActionResult> UpdateProfileAsync([FromForm] UserUpdateProfileRequestDTO userRequest)
+    {
+        try 
+        {
+            var res = await _userService.UpdateProfileAsync(userRequest);
+            return Ok(res);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+        }
+    }
 
     [HttpPatch("{id}/password")]
     public async Task<IActionResult> ChangePasswordAsync(int id, [FromBody] UserNewPasswordRequestDTO user)
