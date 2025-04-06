@@ -103,7 +103,7 @@ public class PostService : IPostService
             DeliveryLocation = post.PickUpLocation.Name,
             SuggestedValue = post.SugestedValue,
             PosterUserName = post.PosterUser.Name,
-            CreatedAt = post.CreatedAt.ToString("HH:mm") //SOlo la hora y minutos
+            CreatedAt = post.CreatedAt.ToString("hh:mm tt") //SOlo la hora y minutos
         });
         
         return new ResponseDTO<IEnumerable<PostResponseDTO>>
@@ -122,10 +122,13 @@ public class PostService : IPostService
         return posts.Select(post => new PostResponseDTO
         {
             Id = post.Id,
+            Title = post.Title,
             Description = post.Description,
             SuggestedValue = post.SugestedValue,
             PosterUserName = post.PosterUser?.Name ?? string.Empty, 
-            CreatedAt = post.CreatedAt.ToString("yyyy-MM-dd HH:mm")
+            CreatedAt = post.CreatedAt.ToString("hh:mm tt"),
+            PickUpLocation = post.PickUpLocation?.Name ?? string.Empty,
+            DeliveryLocation = post.DeliveryLocation?.Name ?? string.Empty
         }).ToList();
     }
 
@@ -139,7 +142,7 @@ public class PostService : IPostService
             Description = p.Description,
             SuggestedValue = p.SugestedValue,
             PosterUserName = p.PosterUser?.Name ?? "Usuario desconocido",
-            CreatedAt = p.CreatedAt.ToString("yyyy-MM-dd HH:mm"),
+            CreatedAt = p.CreatedAt.ToString("hh:mm tt"),
             PickUpLocation = p.PickUpLocation?.Name ?? "Ubicación no disponible",
             DeliveryLocation = p.DeliveryLocation?.Name ?? "Ubicación no disponible"
         }).ToList();
@@ -165,7 +168,7 @@ public class PostService : IPostService
         {
             Id = post.Id,
             Description = post.Description,
-            CreatedAt = post.CreatedAt.ToString("yyyy-MM-dd HH:mm"),
+            CreatedAt = post.CreatedAt.ToString("hh:mm tt"),
             PosterUserName = post.PosterUser?.Name ?? "Usuario desconocido",
             DeliveryLocation = post.DeliveryLocation?.Name ?? "Ubicación no disponible",
             PickUpLocation = post.PickUpLocation?.Name ?? "Ubicación no disponible",

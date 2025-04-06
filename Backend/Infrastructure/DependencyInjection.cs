@@ -40,6 +40,7 @@ public static class DependencyInjection
         services.AddScoped<ICareerService, CareerService>();
 
         services.AddScoped<IOfferRepository, OfferRepository>();
+        services.AddScoped<IOfferService, OfferService>();
         
         services.AddScoped<IMandaditoRepository, MandaditoRepository>();
         services.AddScoped<IMandaditoService, MandaditoService>();
