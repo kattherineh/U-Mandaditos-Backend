@@ -156,7 +156,66 @@ public class UserService : IUserService
             };
         }
     }
-    
+
+    public async Task<ResponseDTO<UserPublicProfileInfoResponseDTO>> GetPublicProfileInfoAsync(int id)
+    {
+        try
+        {
+            var user = await _userRepository.GetByIdAsync(id);
+
+            if (user is null)
+            {
+                return new ResponseDTO<UserPublicProfileInfoResponseDTO>
+                {
+                    Success = false,
+                    Message = $"Usuario con id={id} no encontrado"
+                };
+            }
+
+            var data = new UserPublicProfileInfoResponseDTO
+            {
+                Name = user.Name,
+                Dni = user.Dni,
+                Email = user.Email,
+                BirthDay = user.BirthDay.ToString("yy-MM-dd"),
+                Score = user.Rating,
+                ProfilePic = new MediaResponseDTO
+                {
+                    Id = user.ProfilePic.Id,
+                    Name = user.ProfilePic.Name,
+                    Link = user.ProfilePic.Link
+                },
+                LastLocation = user.LastLocation != null ? new LastLocationUserDTO
+                {
+                    Description = user.LastLocation.Description,
+                    Name = user.LastLocation.Name,
+                    Id = user.LastLocation.Id
+                } : null,
+                Career = new CareerResponseDTO
+                {
+                    Id = user.Career.Id,
+                    Name = user.Career.Name
+                }
+            };
+
+            return new ResponseDTO<UserPublicProfileInfoResponseDTO>
+            {
+                Success = true,
+                Message = $"La información del usuario con id={id} fue obtenida satisfactoriamente",
+                Data = data
+            };
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+            return new ResponseDTO<UserPublicProfileInfoResponseDTO>
+            {
+                Success = false,
+                Message = $"Ocurrió un error al obtener al usuario con id={id}"
+            };
+        }
+    }
+
     public async Task<ResponseDTO<UserProfileResponseDTO>> GetUser()
     {
         try
