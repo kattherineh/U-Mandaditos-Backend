@@ -26,23 +26,16 @@ jobs:
     - name: Build and tag Docker image
       run: |
         # Obtener el nombre del repositorio dinámicamente
-        REPO_NAME="${{ github.repository }}"
-        
-        # Verificar si el sistema operativo es Linux o Windows y convertir a minúsculas de acuerdo a eso
-        if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-          REPO_LOWER=$(echo "$REPO_NAME" | tr '[:upper:]' '[:lower:]')
-        elif [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" ]]; then
-          REPO_LOWER=$(echo "$REPO_NAME" | awk '{print tolower($0)}')
-        fi
+        $repo = "${{ github.repository }}".ToLower()
         
         # Construir el nombre de la imagen
-        IMAGE_NAME="ghcr.io/$REPO_LOWER/api:dev"
-        echo "Building $IMAGE_NAME"
+        $imageNname = "ghcr.io/$repo/api:dev"
+        echo "Building $imageName"
         
         # Construir la imagen Docker
-        docker build --no-cache -t $IMAGE_NAME -f Backend/API/Dockerfile Backend
+        docker build --no-cache -t $imageName -f Backend/API/Dockerfile Backend
 
     - name: Push Docker image to GitHub Container Registry
       run: |
         # Empujar la imagen Docker al registro de GitHub
-        docker push $IMAGE_NAME
+        docker push $imageName
