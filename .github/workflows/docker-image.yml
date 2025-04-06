@@ -1,3 +1,5 @@
+# Crea la imagen de docker al recibir un PR
+
 name: Docker Image CI
 
 on:
@@ -27,16 +29,10 @@ jobs:
       run: |
         # Obtener el nombre del repositorio dinámicamente
         REPO_NAME="${{ github.repository }}"
-        
-        # Verificar si el sistema operativo es Linux o Windows y convertir a minúsculas de acuerdo a eso
-        if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-          REPO_LOWER=$(echo "$REPO_NAME" | tr '[:upper:]' '[:lower:]')
-        elif [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" ]]; then
-          REPO_LOWER=$(echo "$REPO_NAME" | awk '{print tolower($0)}')
-        fi
+        REPO_LOWER=$(echo "$REPO_NAME" | awk '{print tolower($0)}')
         
         # Construir el nombre de la imagen
-        IMAGE_NAME="ghcr.io/$REPO_LOWER/api:dev"
+        IMAGE_NAME="ghcr.io/${REPO_LOWER}/api:dev"
         echo "Building $IMAGE_NAME"
         
         # Construir la imagen Docker
