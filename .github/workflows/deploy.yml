@@ -1,0 +1,39 @@
+name: Deploy App
+
+on:
+  workflow_dispatch:  # Ejecutarlo manualmente desde GitHub
+
+jobs:
+  deploy:
+    runs-on: proyecto_industria  # Tu runner personalizado
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Log in to GitHub Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Pull image from GHCR
+      shell: bash
+      run: |
+        IMAGE_NAME=ghcr.io/${{ github.repository }}/api:dev
+        IMAGE_NAME=$(echo "$IMAGE_NAME" | tr '[:upper:]' '[:lower:]')
+        docker pull $IMAGE_NAME
+
+    - name: Create .env file from GitHub Secret
+      shell: bash
+      run: |
+        echo "${{ vars.ENV_FILE }}" > .env
+        cat .env
+
+    - name: Run container with .env
+      shell: bash
+      run: |
+        IMAGE_NAME=ghcr.io/${{ github.repository }}/api:dev
+        IMAGE_NAME=$(echo "$IMAGE_NAME" | tr '[:upper:]' '[:lower:]')
+        docker run --env-file .env -d -p 9090:8080 --name api_container $IMAGE_NAME
