@@ -27,7 +27,7 @@ jobs:
       run: |
         # Obtener el nombre del repositorio dinámicamente
         $repo = "${{ github.repository }}".ToLower()
-        
+
         # Construir el nombre de la imagen
         $imageName = "ghcr.io/$repo/api:dev"
         echo "Building $imageName"
@@ -35,7 +35,12 @@ jobs:
         # Construir la imagen Docker
         docker build --no-cache -t $imageName -f Backend/API/Dockerfile Backend
 
+    - name: Debug output - check imageName
+      run: |
+        echo "Image Name: $imageName"  # Esto nos ayudará a ver el valor de imageName
+
     - name: Push Docker image to GitHub Container Registry
       run: |
-        # Empujar la imagen Docker al registro de GitHub
+        # Asegurarse de que imageName no esté vacío
+        echo "Pushing image $imageName"
         docker push $imageName
