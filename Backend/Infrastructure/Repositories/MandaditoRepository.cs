@@ -1,5 +1,7 @@
-﻿using Aplication.Interfaces.Mandaditos;
+﻿using Aplication.DTOs.Mandaditos;
+using Aplication.Interfaces.Mandaditos;
 using Domain.Entities;
+using FirebaseAdmin.Auth.Hash;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -36,7 +38,7 @@ namespace Infrastructure.Repositories
                 .ToListAsync();
         }
 
-        public async Task<Mandadito?> GetByIdAsync(int id)
+                public async Task<Mandadito?> GetByIdAsync(int id)
         {
             return await _context.Mandaditos
                 .Include(m => m.Post)
@@ -59,6 +61,7 @@ namespace Infrastructure.Repositories
                     .ThenInclude(r => r.RatedRole) 
                 .FirstOrDefaultAsync(p => p.Id == id);
         }
+
 
         public async Task AddAsync(Mandadito mandadito)
         {

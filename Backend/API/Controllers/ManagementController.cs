@@ -30,7 +30,7 @@ public class ManagementController : ControllerBase
         }
     }
 
-    [HttpPost("{id}/compare")]
+    [HttpPatch("{id}/compare")]
     public async Task<IActionResult> CompareCode(int id, [FromBody] CodeDTO dto)
     {
         try

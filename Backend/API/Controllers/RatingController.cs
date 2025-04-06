@@ -51,5 +51,6 @@ namespace API.Controllers
             var rating = await _ratingService.GetByIdAsync(id);
             return rating is null ? NotFound($"El rating con id {id} no existe.") : Ok(rating);
         }
+
     }
 }
