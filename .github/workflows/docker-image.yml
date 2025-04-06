@@ -29,15 +29,17 @@ jobs:
         REPO_NAME="${{ github.repository }}"
         
         # Verificar si el sistema operativo es Linux o Windows y convertir a minúsculas de acuerdo a eso
-        if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-          REPO_LOWER=$(echo "$REPO_NAME" | tr '[:upper:]' '[:lower:]')
-        elif [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" ]]; then
-          REPO_LOWER=$(echo "$REPO_NAME" | awk '{print tolower($0)}')
-        fi
-        
+        if ($env:OSTYPE -like "linux*") {
+          # Para sistemas Linux
+          $REPO_LOWER = $REPO_NAME.ToLower()
+        } elseif ($env:OSTYPE -like "msys*") {
+          # Para sistemas Windows con PowerShell
+          $REPO_LOWER = $REPO_NAME.ToLower()
+        }
+
         # Construir el nombre de la imagen
-        IMAGE_NAME="ghcr.io/$REPO_LOWER/api:dev"
-        echo "Building $IMAGE_NAME"
+        $IMAGE_NAME = "ghcr.io/$REPO_LOWER/api:dev"
+        Write-Host "Building $IMAGE_NAME"
         
         # Construir la imagen Docker
         docker build --no-cache -t $IMAGE_NAME -f Backend/API/Dockerfile Backend
