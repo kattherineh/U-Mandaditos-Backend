@@ -2,6 +2,7 @@ using Aplication.Interfaces;
 using Aplication.Interfaces.Offers;
 using Aplication.DTOs;
 using Domain.Entities;
+using Aplication.DTOs.General;
 
 
 namespace Aplication.Services
@@ -35,19 +36,34 @@ namespace Aplication.Services
             };
         }
 
-        public async Task<IEnumerable<OfferResponseDTO>> GetOffersByPostIdAsync(int idPost)
+        public async Task<ResponseDTO<IEnumerable<OfferResponseDTO>>> GetOffersByPostIdAsync(int idPost)
         {
             var offers = await _offerRepository.GetOffersByPostId(idPost);
 
-            return offers.Select(offer => new OfferResponseDTO
+            if (offers is null || !offers.Any())
             {
+                return new ResponseDTO<IEnumerable<OfferResponseDTO>>
+                {
+                    Success = false,
+                    Message = "No offers found for this post.",
+                    Data = Enumerable.Empty<OfferResponseDTO>()
+                };
+            }
+
+            return new ResponseDTO<IEnumerable<OfferResponseDTO>>
+            {
+                Success = true,
+                Message = "Offers retrieved successfully.",
+                Data = offers.Select(offer => new OfferResponseDTO
+                {
                 Id = offer.Id,
                 CounterOfferAmount = offer.CounterOfferAmount,
                 UserCreator = offer.UserCreator,
                 Post = offer.Post,
                 IsCounterOffer = offer.IsCounterOffer,
                 CreatedAt = offer.CreatedAt
-            });
+                })
+            };
         }
 
         public async Task<OfferResponseDTO> CreateOfferAsync(OfferRequestDTO offerRequest)
