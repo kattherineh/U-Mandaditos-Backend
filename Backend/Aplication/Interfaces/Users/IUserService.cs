@@ -10,6 +10,7 @@ public interface IUserService
     Task<ResponseDTO<UserResponseDTO>> CreateUserAsync(UserRequestDTO userRequest);
     Task<UserResponseDTO?> GetByEmailAsync(string email);
     Task<ResponseDTO<UserProfileResponseDTO>> GetByIdAsync(int id);
+    Task<ResponseDTO<UserPublicProfileInfoResponseDTO>> GetPublicProfileInfoAsync(int id);
     Task<ResponseDTO<UpdatedResponseDTO>> UpdateAsync(int id, UserProfileRequestDTO user);
     Task<ResponseDTO<UpdatedResponseDTO>> UpdateProfileAsync(UserUpdateProfileRequestDTO user);
     Task<ResponseDTO<bool>> ChangePasswordAsync(int id, string password);
