@@ -51,7 +51,7 @@ public class OfferController : ControllerBase
 
             if (offer is null) return BadRequest("No se pudo crear la oferta correctamente");
 
-            return CreatedAtAction(nameof(GetOfferByPostId), new { id = offer.Id }, offer);
+            return Ok(offer);
         }
         catch (Exception ex)
         {

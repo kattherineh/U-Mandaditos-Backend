@@ -1,6 +1,9 @@
 using Aplication.Interfaces;
 using Aplication.Interfaces.Offers;
 using Aplication.DTOs;
+using Aplication.DTOs.General;
+using Aplication.Interfaces.Auth;
+using Aplication.Interfaces.Posts;
 using Domain.Entities;
 using Aplication.DTOs.General;
 
@@ -10,10 +13,14 @@ namespace Aplication.Services
     public class OfferService : IOfferService
     {
         private readonly IOfferRepository _offerRepository;
+        private readonly IAuthenticatedUserService _authenticatedUserService;
+        private readonly IPostRepository _postRepository;
 
-        public OfferService(IOfferRepository offerRepository)
+        public OfferService(IOfferRepository offerRepository, IAuthenticatedUserService authenticatedUserService, IPostRepository postRepository)
         {
             _offerRepository = offerRepository;
+            _authenticatedUserService = authenticatedUserService;
+            _postRepository = postRepository;
         }
 
         public async Task<OfferResponseDTO?> GetOfferByIdAsync(int id)
@@ -66,30 +73,49 @@ namespace Aplication.Services
             };
         }
 
-        public async Task<OfferResponseDTO> CreateOfferAsync(OfferRequestDTO offerRequest)
+        public async Task<ResponseDTO<OfferResponseDTO>> CreateOfferAsync(OfferRequestDTO offerRequest)
         {
+            var userId = _authenticatedUserService.GetAuthenticatedUserId();
+
+            // Validar que el Post existe
+            var post = await _postRepository.GetByIdAsync(offerRequest.PostId);
+            if (post == null)
+            {
+                return new ResponseDTO<OfferResponseDTO>
+                {
+                    Success = false,
+                    Message = $"No existe un post con el ID {offerRequest.PostId}",
+                    Data = null
+                };
+            }
+
+            // Crear y guardar la oferta
             var offer = new Offer
             {
                 CounterOfferAmount = offerRequest.CounterOfferAmount,
-                IdUserCreator = offerRequest.UserCreatorId,
+                IdUserCreator = userId,
                 IdPost = offerRequest.PostId,
                 IsCounterOffer = offerRequest.IsCounterOffer,
-                CreatedAt = offerRequest.CreatedAt
+                CreatedAt = DateTime.Now
             };
 
             await _offerRepository.AddAsync(offer);
 
-            return new OfferResponseDTO
-            {
-                Id = offer.Id,
-                CounterOfferAmount = offer.CounterOfferAmount,
-                UserCreator = offer.UserCreator,
-                Post = offer.Post,
-                IsCounterOffer = offer.IsCounterOffer,
-                CreatedAt = offer.CreatedAt
-            };
-
+            return new ResponseDTO<OfferResponseDTO>
+                {
+                    Success = true,
+                    Message = "La oferta se realizo correctament",
+                    Data = new OfferResponseDTO{
+                        Id = offer.Id,
+                        CounterOfferAmount = offer.CounterOfferAmount,
+                        UserCreator = offer.UserCreator,
+                        Post = offer.Post,
+                        IsCounterOffer = offer.IsCounterOffer,
+                        CreatedAt = offer.CreatedAt
+                    }
+                };
         }
+
 
         public async Task<OfferResponseDTO?> UpdateOfferStateAsync(int id, bool state)
         {
