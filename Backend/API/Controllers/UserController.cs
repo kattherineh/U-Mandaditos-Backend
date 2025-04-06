@@ -48,7 +48,22 @@ public class UserController: ControllerBase
             return StatusCode(500, $"Error interno del servidor: {ex.Message}");
         }
     }
-    
+
+    [Authorize]
+    [HttpGet("publicProfile/{id}")]
+    public async Task<IActionResult> GetPublicProfileInfoAsync(int id)
+    {
+        try
+        {
+            var res = await _userService.GetByIdAsync(id);
+            return Ok(res);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+        }
+    }
+
     [Authorize]
     [HttpGet("get")]
     public async Task<IActionResult> GetUser()
